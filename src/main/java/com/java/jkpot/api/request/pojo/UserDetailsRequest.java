@@ -1,6 +1,5 @@
 package com.java.jkpot.api.request.pojo;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class UserDetailsRequest {
@@ -15,7 +14,9 @@ public class UserDetailsRequest {
 	private String firebaseUID;
 	private String location;
 	private String macAddress;
-	private List<String> examPreferences = new ArrayList<>();
+	private List<String> examPreferences;
+	private List<Integer> subscriptionIds;
+	private boolean isPrimeUser;
 
 	public long getUserId() {
 		return userId;
@@ -101,7 +102,30 @@ public class UserDetailsRequest {
 		return examPreferences;
 	}
 
-	public void setExamPreferences(List<String> examPreferences) {
-		this.examPreferences = examPreferences;
+	public void setExamPreferences(List<String> examPreferencesList) {
+
+		if (this.getExamPreferences() == null || this.getExamPreferences().size() == 0)
+			this.examPreferences= (examPreferencesList);
+		else
+			this.examPreferences.addAll(examPreferencesList);
+	}
+
+	public List<Integer> getSubscriptionIds() {
+		return subscriptionIds;
+	}
+
+	public void setSubscriptionIds(List<Integer> subscriptionIdsList) {
+		if (this.getSubscriptionIds() == null || this.getSubscriptionIds().size() == 0)
+			this.subscriptionIds = (subscriptionIdsList);
+		else
+			this.subscriptionIds.addAll(subscriptionIdsList);
+	}
+
+	public boolean getIsPrimeUser() {
+		return isPrimeUser;
+	}
+
+	public void setIsPrimeUser(boolean isPrimeUser) {
+		this.isPrimeUser = isPrimeUser;
 	}
 }

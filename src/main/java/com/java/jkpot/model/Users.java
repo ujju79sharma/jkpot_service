@@ -1,6 +1,7 @@
 package com.java.jkpot.model;
 
-import java.util.List;
+import java.time.LocalDate;
+import java.util.TreeSet;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -19,8 +20,11 @@ public class Users {
 	private String firebaseUID;
 	private String location;
 	private String macAddress;
-	private List<String> examPreferences;
+	private TreeSet<String> examPreferences;
+	private TreeSet<Integer> subscriptionIds;
+	private boolean isPrimeUser;
 	private String status;
+	private LocalDate createdOn;
 
 	public long getUserId() {
 		return userId;
@@ -102,12 +106,15 @@ public class Users {
 		this.macAddress = macAddress;
 	}	
 
-	public List<String> getExamPreferences() {
+	public TreeSet<String> getExamPreferences() {
 		return examPreferences;
 	}
 
-	public void setExamPreferences(List<String> examPreferences) {
-		this.examPreferences = examPreferences;
+	public void setExamPreferences(TreeSet<String> examPreferencesList) {
+		if (this.getExamPreferences() == null || this.getExamPreferences().size() == 0)
+			this.examPreferences= (examPreferencesList);
+		else
+			this.examPreferences.addAll(examPreferencesList);
 	}
 
 	public String getStatus() {
@@ -118,9 +125,39 @@ public class Users {
 		this.status = status;
 	}
 
+	public TreeSet<Integer> getSubscriptionIds() {
+		return subscriptionIds;
+	}
+
+	public void setSubscriptionIds(TreeSet<Integer> subscriptionIdsList) {
+		if (this.getSubscriptionIds() == null || this.getSubscriptionIds().size() == 0)
+			this.subscriptionIds = (subscriptionIdsList);
+		else
+			this.subscriptionIds.addAll(subscriptionIdsList);
+	}
+
+	public boolean isPrimeUser() {
+		return isPrimeUser;
+	}
+
+	public void setPrimeUser(boolean isPrimeUser) {
+		this.isPrimeUser = isPrimeUser;
+	}
+
+	public LocalDate getCreatedOn() {
+		return createdOn;
+	}
+
+	public void setCreatedOn(LocalDate createdOn) {
+		this.createdOn = createdOn;
+	}
+
 	@Override
 	public String toString() {
-		return "Users [userId=" + userId + ", userTypeId=" + userTypeId + ", email=" + email + ", password=" + password
-				+ ", firebaseUID=" + firebaseUID + ", location=" + location + ", macAddress=" + macAddress + "]";
+		return "Users [userId=" + userId + ", userTypeId=" + userTypeId + ", firstName=" + firstName + ", lastName="
+				+ lastName + ", email=" + email + ", phone=" + phone + ", password=" + password + ", firebaseUID="
+				+ firebaseUID + ", location=" + location + ", macAddress=" + macAddress + ", examPreferences="
+				+ examPreferences + ", subscriptionIds=" + subscriptionIds + ", isPrimeUser=" + isPrimeUser
+				+ ", status=" + status + "]";
 	}
 }

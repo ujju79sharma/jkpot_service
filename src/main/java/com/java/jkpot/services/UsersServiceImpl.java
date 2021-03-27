@@ -1,5 +1,8 @@
 package com.java.jkpot.services;
 
+import java.time.LocalDate;
+import java.util.TreeSet;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
@@ -39,13 +42,21 @@ public class UsersServiceImpl implements UsersService{
 			theUser.setUserTypeId(createUserDetails.getUserTypeId());
 			theUser.setMacAddress(createUserDetails.getMacAddress());
 			theUser.setLocation(createUserDetails.getLocation());
-			theUser.setExamPreferences(createUserDetails.getExamPreferences());
+			
+			TreeSet<String> examPreferences = new TreeSet<String>(createUserDetails.getExamPreferences());
+			theUser.setExamPreferences(examPreferences);
+			
 			theUser.setStatus("Active");
+			theUser.setPrimeUser(false);
+			TreeSet<Integer> subscriptionIds = new TreeSet<>(createUserDetails.getSubscriptionIds());
+			theUser.setSubscriptionIds(subscriptionIds);
 
 			if ((theUser.getEmail() != null || theUser.getPhone() != null) && (theUser.getFirebaseUID() != null)) {
 				theUser.setUserId(sequence.getNextSequenceOfField("userId"));
 				mongoTemplate.save(theUser, "users"); // save the object
 			}
+			
+			theUser.setCreatedOn(LocalDate.now());
 
 			RestResponse restResponse = new RestResponse("SUCCESS", theUser, 200);
 
@@ -74,10 +85,19 @@ public class UsersServiceImpl implements UsersService{
 					theUser.setUserTypeId(createUserDetails.getUserTypeId());
 				if (createUserDetails.getMacAddress() != null)
 					theUser.setMacAddress(createUserDetails.getMacAddress());
-				if (createUserDetails.getExamPreferences() != null && createUserDetails.getExamPreferences().size() > 0)
-					theUser.setExamPreferences(createUserDetails.getExamPreferences());
-				if (createUserDetails.getLocation() != null && createUserDetails.getLocation().length() > 0)
+				if (createUserDetails.getExamPreferences() != null && createUserDetails.getExamPreferences().size() > 0) {
+					TreeSet<String> examPreferences = new TreeSet<String>(createUserDetails.getExamPreferences());
+					theUser.setExamPreferences(examPreferences);
+				}
+				if (createUserDetails.getLocation() != null && createUserDetails.getLocation().length() > 0) {
 					theUser.setLocation(createUserDetails.getLocation());
+				}
+				if (createUserDetails.getIsPrimeUser() == true || createUserDetails.getIsPrimeUser() == false)
+					theUser.setPrimeUser(createUserDetails.getIsPrimeUser());
+				if (createUserDetails.getSubscriptionIds() != null && createUserDetails.getSubscriptionIds().size() > 0) {
+					TreeSet<Integer> subscriptionIds = new TreeSet<>(createUserDetails.getSubscriptionIds());
+					theUser.setSubscriptionIds(subscriptionIds);
+				}
 
 				mongoTemplate.save(theUser, "users"); // save the object
 
