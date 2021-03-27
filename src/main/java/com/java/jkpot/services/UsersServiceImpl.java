@@ -23,13 +23,13 @@ public class UsersServiceImpl implements UsersService{
 
 	@Override
 	public ResponseEntity<RestResponse> createAUser(UserDetailsRequest createUserDetails) {
-		
+
 		long userId = createUserDetails.getUserId();
-		
+
 		if (userId == 0) {
-			
+
 			Users theUser = new Users();
-			
+
 			theUser.setFirstName(createUserDetails.getFirstName());
 			theUser.setLastName(createUserDetails.getLastName());
 			theUser.setEmail(createUserDetails.getEmail());
@@ -41,27 +41,23 @@ public class UsersServiceImpl implements UsersService{
 			theUser.setLocation(createUserDetails.getLocation());
 			theUser.setExamPreferences(createUserDetails.getExamPreferences());
 			theUser.setStatus("Active");
-			
+
 			if ((theUser.getEmail() != null || theUser.getPhone() != null) && (theUser.getFirebaseUID() != null)) {
 				theUser.setUserId(sequence.getNextSequenceOfField("userId"));
 				mongoTemplate.save(theUser, "users"); // save the object
 			}
 
-			RestResponse restResponse = new RestResponse();
-	
-			restResponse.setStatusCode(200);
-			restResponse.setMessage("SUCCESS");
-			restResponse.setData(theUser);
-	
+			RestResponse restResponse = new RestResponse("SUCCESS", theUser, 200);
+
 			return ResponseEntity.status(200).body(restResponse);
 		}else if (userId > 0){
-			
+
 			Users foundUser = usersDAO.findUsersById(userId);
-			
+
 			if (foundUser != null) {
-			
+
 				Users theUser = foundUser;
-				
+
 				if (createUserDetails.getFirstName() != null)
 					theUser.setFirstName(createUserDetails.getFirstName());
 				if (createUserDetails.getLastName() != null)
@@ -82,79 +78,59 @@ public class UsersServiceImpl implements UsersService{
 					theUser.setExamPreferences(createUserDetails.getExamPreferences());
 				if (createUserDetails.getLocation() != null && createUserDetails.getLocation().length() > 0)
 					theUser.setLocation(createUserDetails.getLocation());
-				
+
 				mongoTemplate.save(theUser, "users"); // save the object
-			
-				RestResponse restResponse = new RestResponse();
-				
-				restResponse.setStatusCode(200);
-				restResponse.setMessage("SUCCESS");
-				restResponse.setData(theUser);
-				
+
+				RestResponse restResponse = new RestResponse("SUCCESS", theUser, 200);
+
 				return ResponseEntity.status(200).body(restResponse);
 			}else {
-				
-				RestResponse restResponse = new RestResponse();
-				
-				restResponse.setStatusCode(404);
-				restResponse.setMessage("FAILURE");
-				restResponse.setData("User does not exist.");
-				
+
+				RestResponse restResponse = new RestResponse("FAILURE", "User does not exist.", 404);
+
 				return ResponseEntity.status(404).body(restResponse);
 			}
 		}else {
-			
-			RestResponse restResponse = new RestResponse();
-			
-			restResponse.setStatusCode(404);
-			restResponse.setMessage("FAILURE");
-			restResponse.setData("User does not exist.");
-			
+
+			RestResponse restResponse = new RestResponse("FAILURE", "User does not exist.", 404);
+
 			return ResponseEntity.status(404).body(restResponse);
 		}
 	}
-	
+
 	@Override
 	public ResponseEntity<RestResponse> findAUser(long userId) {
-		
+
 		if (userId > 0) {
 			Users theUser = usersDAO.findUsersById(userId);
-			
+
 			if (theUser != null) {
-				
-				RestResponse restResponse = new RestResponse();
-				
+
+				RestResponse restResponse = new RestResponse("SUCCESS", theUser, 200);
+
 				restResponse.setStatusCode(200);
 				restResponse.setMessage("SUCCESS");
 				restResponse.setData(theUser);
-				
+
 				return ResponseEntity.status(200).body(restResponse);
-				
+
 			}else {
-				RestResponse restResponse = new RestResponse();
-				
-				restResponse.setStatusCode(404);
-				restResponse.setMessage("FAILURE");
-				restResponse.setData("User does not exist.");
-				
+				RestResponse restResponse = new RestResponse("FAILURE", "User does not exist.", 404);
+
 				return ResponseEntity.status(403).body(restResponse);
 			}
-			
-		}else {
-			
-			RestResponse restResponse = new RestResponse();
 
-			restResponse.setStatusCode(403);
-			restResponse.setMessage("FAILURE");
-			restResponse.setData("Please provide a valid userId.");
-			
+		}else {
+
+			RestResponse restResponse = new RestResponse("FAILURE", "Please provide a valid userId.", 403);
+
 			return ResponseEntity.status(403).body(restResponse);
 		}
 	}
 
 	@Override
 	public ResponseEntity<RestResponse> deleteAUser(long userId) {
-		
+
 		if (userId > 0) {
 			Users theUser = usersDAO.findUsersById(userId);
 			
@@ -163,32 +139,20 @@ public class UsersServiceImpl implements UsersService{
 				theUser.setStatus("Inactive");
 				mongoTemplate.save(theUser, "users"); //change the status of the user to Inactive
 				
-				RestResponse restResponse = new RestResponse();
-				
-				restResponse.setStatusCode(200);
-				restResponse.setMessage("SUCCESS");
-				restResponse.setData("Deleted user successfully.");
+				RestResponse restResponse = new RestResponse("SUCCESS", theUser, 200);
 				
 				return ResponseEntity.status(200).body(restResponse);
 				
 			}else {
-				RestResponse restResponse = new RestResponse();
-				
-				restResponse.setStatusCode(404);
-				restResponse.setMessage("FAILURE");
-				restResponse.setData("User does not exist.");
-				
+				RestResponse restResponse = new RestResponse("FAILURE", "User does not exist.", 404);
+
 				return ResponseEntity.status(403).body(restResponse);
 			}
 			
 		}else {
 			
-			RestResponse restResponse = new RestResponse();
-			
-			restResponse.setStatusCode(403);
-			restResponse.setMessage("FAILURE");
-			restResponse.setData("Please provide a valid userId.");
-			
+			RestResponse restResponse = new RestResponse("FAILURE", "Please provide a valid userId.", 403);
+
 			return ResponseEntity.status(403).body(restResponse);
 		}
 	}

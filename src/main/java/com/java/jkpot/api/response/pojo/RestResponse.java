@@ -6,6 +6,13 @@ public class RestResponse {
 	private Object data;
 	private int statusCode;
 
+	public RestResponse(String message, Object data, int statusCode) {
+		super();
+		this.message = message;
+		this.data = data;
+		this.statusCode = statusCode;
+	}
+
 	public String getMessage() {
 		return message;
 	}
@@ -29,4 +36,5 @@ public class RestResponse {
 	public void setStatusCode(int statusCode) {
 		this.statusCode = statusCode;
 	}
+
 }
