@@ -4,7 +4,7 @@ import java.util.List;
 
 public class UserDetailsRequest {
 
-	private long userId;
+	private String userId;
 	private String firstName;
 	private String lastName;
 	private int userTypeId;
@@ -18,11 +18,11 @@ public class UserDetailsRequest {
 	private List<Integer> subscriptionIds;
 	private boolean isPrimeUser;
 
-	public long getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 

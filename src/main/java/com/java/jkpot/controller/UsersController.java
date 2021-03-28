@@ -28,13 +28,13 @@ public class UsersController {
 	}
 	
 	@GetMapping(value = "/find/{userId}")
-	public ResponseEntity<RestResponse> findAUser(@PathVariable long userId) {
+	public ResponseEntity<RestResponse> findAUser(@PathVariable String userId) {
 
 		return usersService.findAUser(userId);
 	}
 
 	@DeleteMapping(value = "/delete/{userId}")
-	public ResponseEntity<RestResponse> deleteAUser(@PathVariable long userId) {
+	public ResponseEntity<RestResponse> deleteAUser(@PathVariable String userId) {
 
 		return usersService.deleteAUser(userId);
 	}

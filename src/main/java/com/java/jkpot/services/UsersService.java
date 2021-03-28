@@ -10,8 +10,8 @@ public interface UsersService {
 
 	ResponseEntity<RestResponse> createAUser(@RequestBody UserDetailsRequest createUserDetails);
 
-	ResponseEntity<RestResponse> findAUser(long userId);
+	ResponseEntity<RestResponse> findAUser(String userId);
 	
-	ResponseEntity<RestResponse> deleteAUser(long userId);
+	ResponseEntity<RestResponse> deleteAUser(String userId);
 
 }

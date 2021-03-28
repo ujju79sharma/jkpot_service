@@ -6,3 +6,7 @@ build
 *.class
 *.class
 *.class
+*.class
+bin/main/com/java/jkpot/controller/UsersController.class
+*.class
+*.class

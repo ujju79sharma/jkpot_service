@@ -4,7 +4,7 @@ import com.java.jkpot.model.Users;
 
 public interface UsersDAO {
 
-	Users findUsersById(long userId);
+	Users findUsersById(String userId);
 	
 	Users findUserByEmailAndPhone(String email, String phone);
 }

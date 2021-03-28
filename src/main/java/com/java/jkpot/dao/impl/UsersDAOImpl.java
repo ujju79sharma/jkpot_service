@@ -16,7 +16,7 @@ public class UsersDAOImpl implements UsersDAO {
 	private MongoTemplate mongoTemplate;
 	
 	@Override
-	public Users findUsersById(long userId) {
+	public Users findUsersById(String userId) {
 		
 		return mongoTemplate.findOne(Query.query(Criteria.where("userId").is(userId)).addCriteria(Criteria.where("status")
 				.is("Active")), Users.class);

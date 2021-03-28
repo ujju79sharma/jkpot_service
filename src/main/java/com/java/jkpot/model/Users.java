@@ -10,13 +10,12 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Users {
 
 	@Id
-	private long userId;
+	private String userId;
 	private int userTypeId;
 	private String firstName;
 	private String lastName;
 	private String email;
 	private String phone;
-	private String password;
 	private String firebaseUID;
 	private String location;
 	private String macAddress;
@@ -26,11 +25,11 @@ public class Users {
 	private String status;
 	private LocalDate createdOn;
 
-	public long getUserId() {
+	public String getUserId() {
 		return userId;
 	}
 
-	public void setUserId(long userId) {
+	public void setUserId(String userId) {
 		this.userId = userId;
 	}
 
@@ -72,14 +71,6 @@ public class Users {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-	}
-
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
 	}
 
 	public String getFirebaseUID() {
@@ -155,7 +146,7 @@ public class Users {
 	@Override
 	public String toString() {
 		return "Users [userId=" + userId + ", userTypeId=" + userTypeId + ", firstName=" + firstName + ", lastName="
-				+ lastName + ", email=" + email + ", phone=" + phone + ", password=" + password + ", firebaseUID="
+				+ lastName + ", email=" + email + ", phone=" + phone + ", firebaseUID="
 				+ firebaseUID + ", location=" + location + ", macAddress=" + macAddress + ", examPreferences="
 				+ examPreferences + ", subscriptionIds=" + subscriptionIds + ", isPrimeUser=" + isPrimeUser
 				+ ", status=" + status + "]";
