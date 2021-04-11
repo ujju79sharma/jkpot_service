@@ -39,20 +39,24 @@ public class UsersServiceImpl implements UsersService{
 			theUser.setMacAddress(createUserDetails.getMacAddress());
 			theUser.setLocation(createUserDetails.getLocation());
 			
-			TreeSet<String> examPreferences = new TreeSet<String>(createUserDetails.getExamPreferences());
-			theUser.setExamPreferences(examPreferences);
-			
+			if (createUserDetails.getExamPreferences() != null && createUserDetails.getExamPreferences().size() > 0) {
+				TreeSet<String> examPreferences = new TreeSet<String>(createUserDetails.getExamPreferences());
+				theUser.setExamPreferences(examPreferences);
+			}
+
 			theUser.setStatus("Active");
 			theUser.setPrimeUser(false);
-			TreeSet<Integer> subscriptionIds = new TreeSet<>(createUserDetails.getSubscriptionIds());
-			theUser.setSubscriptionIds(subscriptionIds);
-
+			
+			if (createUserDetails.getSubscriptionIds() != null && createUserDetails.getSubscriptionIds().size() > 0) {
+				TreeSet<Integer> subscriptionIds = new TreeSet<>(createUserDetails.getSubscriptionIds());
+				theUser.setSubscriptionIds(subscriptionIds);
+			}
+	
 			if ((theUser.getEmail() != null || theUser.getPhone() != null) && (theUser.getFirebaseUID() != null)) {
 				theUser.setUserId(createUserDetails.getUserId());
+				theUser.setCreatedOn(LocalDate.now());
 				mongoTemplate.save(theUser, "users"); // save the object
 			}
-			
-			theUser.setCreatedOn(LocalDate.now());
 
 			RestResponse restResponse = new RestResponse("SUCCESS", theUser, 200);
 

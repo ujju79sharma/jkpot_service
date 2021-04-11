@@ -17,13 +17,13 @@ public class CountersDAOImpl implements CountersDAO {
 	private MongoTemplate mongoTemplate;
 
 	@Override
-	public long getNextSequenceOfField(String fieldName) {
+	public int getNextSequenceOfField(String fieldName) {
 
 		Query query = new Query();
 		query.addCriteria(Criteria.where("name").is(fieldName));
 		Update update = new Update().inc("sequence", 1);
 
-		return mongoTemplate.findAndModify(query, update, Counters.class).getSequence();
+		return (int)mongoTemplate.findAndModify(query, update, Counters.class).getSequence();
 	}
 
 }

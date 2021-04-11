@@ -1,12 +1,7 @@
-package com.java.jkpot.model;
+package com.java.jkpot.api.request.pojo;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+public class ExamDetailsRequest {
 
-@Document(collection = "exams")
-public class Exams {
-
-	@Id
 	private int examId;
 	private String examName;
 	private String examLogo;
@@ -33,10 +28,5 @@ public class Exams {
 
 	public void setExamLogo(String examLogo) {
 		this.examLogo = examLogo;
-	}
-
-	@Override
-	public String toString() {
-		return "Exams [examId=" + examId + ", examName=" + examName + ", examLogo=" + examLogo + "]";
 	}
 }
