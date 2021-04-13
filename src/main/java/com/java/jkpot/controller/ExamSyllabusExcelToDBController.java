@@ -133,7 +133,7 @@ public class ExamSyllabusExcelToDBController {
 			examSyllabus.setSubTopic(subTopic);
 		if (numberOfQuestions > 0)
 			examSyllabus.setNumberOfQuestions(numberOfQuestions);
-		
+
 		if (topicId > 0 && subTopicId > 0 && numberOfQuestions > 0)
 			return examSyllabus;
 		else if (numberOfQuestions == 0 && subTopic.equalsIgnoreCase("Mock")) {

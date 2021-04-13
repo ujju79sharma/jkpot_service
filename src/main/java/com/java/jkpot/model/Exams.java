@@ -8,6 +8,7 @@ public class Exams {
 
 	@Id
 	private int examId;
+	private int examConductorId;
 	private String examName;
 	private String examLogo;
 
@@ -17,6 +18,14 @@ public class Exams {
 
 	public void setExamId(int examId) {
 		this.examId = examId;
+	}
+
+	public int getExamConductorId() {
+		return examConductorId;
+	}
+
+	public void setExamConductorId(int examConductorId) {
+		this.examConductorId = examConductorId;
 	}
 
 	public String getExamName() {
@@ -37,6 +46,7 @@ public class Exams {
 
 	@Override
 	public String toString() {
-		return "Exams [examId=" + examId + ", examName=" + examName + ", examLogo=" + examLogo + "]";
+		return "Exams [examId=" + examId + ", examConductorId=" + examConductorId + ", examName=" + examName
+				+ ", examLogo=" + examLogo + "]";
 	}
 }
