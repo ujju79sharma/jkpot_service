@@ -10,3 +10,6 @@ build
 bin/main/com/java/jkpot/controller/UsersController.class
 *.class
 *.class
+settings.gradle
+settings.gradle
+*.gradle

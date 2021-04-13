@@ -7,16 +7,11 @@ public class UserDetailsRequest {
 	private String userId;
 	private String firstName;
 	private String lastName;
-	private int userTypeId;
 	private String email;
 	private String phone;
-	private String password;
 	private String firebaseUID;
 	private String location;
-	private String macAddress;
 	private List<String> examPreferences;
-	private List<Integer> subscriptionIds;
-	private boolean isPrimeUser;
 
 	public String getUserId() {
 		return userId;
@@ -24,14 +19,6 @@ public class UserDetailsRequest {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
-	}
-
-	public int getUserTypeId() {
-		return userTypeId;
-	}
-
-	public void setUserTypeId(int userTypeId) {
-		this.userTypeId = userTypeId;
 	}
 
 	public String getFirstName() {
@@ -66,14 +53,6 @@ public class UserDetailsRequest {
 		this.phone = phone;
 	}
 
-	public String getPassword() {
-		return password;
-	}
-
-	public void setPassword(String password) {
-		this.password = password;
-	}
-
 	public String getFirebaseUID() {
 		return firebaseUID;
 	}
@@ -90,14 +69,6 @@ public class UserDetailsRequest {
 		this.location = location;
 	}
 
-	public String getMacAddress() {
-		return macAddress;
-	}
-
-	public void setMacAddress(String macAddress) {
-		this.macAddress = macAddress;
-	}
-
 	public List<String> getExamPreferences() {
 		return examPreferences;
 	}
@@ -108,24 +79,5 @@ public class UserDetailsRequest {
 			this.examPreferences= (examPreferencesList);
 		else
 			this.examPreferences.addAll(examPreferencesList);
-	}
-
-	public List<Integer> getSubscriptionIds() {
-		return subscriptionIds;
-	}
-
-	public void setSubscriptionIds(List<Integer> subscriptionIdsList) {
-		if (this.getSubscriptionIds() == null || this.getSubscriptionIds().size() == 0)
-			this.subscriptionIds = (subscriptionIdsList);
-		else
-			this.subscriptionIds.addAll(subscriptionIdsList);
-	}
-
-	public boolean getIsPrimeUser() {
-		return isPrimeUser;
-	}
-
-	public void setIsPrimeUser(boolean isPrimeUser) {
-		this.isPrimeUser = isPrimeUser;
 	}
 }

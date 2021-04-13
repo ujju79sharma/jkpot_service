@@ -35,25 +35,18 @@ public class UsersServiceImpl implements UsersService{
 			theUser.setEmail(createUserDetails.getEmail());
 			theUser.setPhone(createUserDetails.getPhone());
 			theUser.setFirebaseUID(createUserDetails.getFirebaseUID());
-			theUser.setUserTypeId(createUserDetails.getUserTypeId());
-			theUser.setMacAddress(createUserDetails.getMacAddress());
 			theUser.setLocation(createUserDetails.getLocation());
-			
+
 			if (createUserDetails.getExamPreferences() != null && createUserDetails.getExamPreferences().size() > 0) {
 				TreeSet<String> examPreferences = new TreeSet<String>(createUserDetails.getExamPreferences());
 				theUser.setExamPreferences(examPreferences);
 			}
 
-			theUser.setStatus("Active");
 			theUser.setPrimeUser(false);
-			
-			if (createUserDetails.getSubscriptionIds() != null && createUserDetails.getSubscriptionIds().size() > 0) {
-				TreeSet<Integer> subscriptionIds = new TreeSet<>(createUserDetails.getSubscriptionIds());
-				theUser.setSubscriptionIds(subscriptionIds);
-			}
 	
 			if ((theUser.getEmail() != null || theUser.getPhone() != null) && (theUser.getFirebaseUID() != null)) {
 				theUser.setUserId(createUserDetails.getUserId());
+				theUser.setStatus("Active");
 				theUser.setCreatedOn(LocalDate.now());
 				mongoTemplate.save(theUser, "users"); // save the object
 			}
@@ -79,22 +72,12 @@ public class UsersServiceImpl implements UsersService{
 				theUser.setPhone(createUserDetails.getPhone());
 			if (createUserDetails.getFirebaseUID() != null)
 				theUser.setFirebaseUID(createUserDetails.getFirebaseUID());
-			if (createUserDetails.getUserTypeId() > 0)
-				theUser.setUserTypeId(createUserDetails.getUserTypeId());
-			if (createUserDetails.getMacAddress() != null)
-				theUser.setMacAddress(createUserDetails.getMacAddress());
 			if (createUserDetails.getExamPreferences() != null && createUserDetails.getExamPreferences().size() > 0) {
 				TreeSet<String> examPreferences = new TreeSet<String>(createUserDetails.getExamPreferences());
 				theUser.setExamPreferences(examPreferences);
 			}
 			if (createUserDetails.getLocation() != null && createUserDetails.getLocation().length() > 0) {
 				theUser.setLocation(createUserDetails.getLocation());
-			}
-			if (createUserDetails.getIsPrimeUser() == true || createUserDetails.getIsPrimeUser() == false)
-				theUser.setPrimeUser(createUserDetails.getIsPrimeUser());
-			if (createUserDetails.getSubscriptionIds() != null && createUserDetails.getSubscriptionIds().size() > 0) {
-				TreeSet<Integer> subscriptionIds = new TreeSet<>(createUserDetails.getSubscriptionIds());
-				theUser.setSubscriptionIds(subscriptionIds);
 			}
 
 			mongoTemplate.save(theUser, "users"); // save the new object

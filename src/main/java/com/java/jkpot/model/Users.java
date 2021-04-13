@@ -11,14 +11,12 @@ public class Users {
 
 	@Id
 	private String userId;
-	private int userTypeId;
 	private String firstName;
 	private String lastName;
 	private String email;
 	private String phone;
 	private String firebaseUID;
 	private String location;
-	private String macAddress;
 	private TreeSet<String> examPreferences;
 	private TreeSet<Integer> subscriptionIds;
 	private boolean isPrimeUser;
@@ -31,14 +29,6 @@ public class Users {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
-	}
-
-	public int getUserTypeId() {
-		return userTypeId;
-	}
-
-	public void setUserTypeId(int userTypeId) {
-		this.userTypeId = userTypeId;
 	}
 
 	public String getFirstName() {
@@ -89,14 +79,6 @@ public class Users {
 		this.location = location;
 	}
 
-	public String getMacAddress() {
-		return macAddress;
-	}
-
-	public void setMacAddress(String macAddress) {
-		this.macAddress = macAddress;
-	}	
-
 	public TreeSet<String> getExamPreferences() {
 		return examPreferences;
 	}
@@ -145,10 +127,8 @@ public class Users {
 
 	@Override
 	public String toString() {
-		return "Users [userId=" + userId + ", userTypeId=" + userTypeId + ", firstName=" + firstName + ", lastName="
-				+ lastName + ", email=" + email + ", phone=" + phone + ", firebaseUID="
-				+ firebaseUID + ", location=" + location + ", macAddress=" + macAddress + ", examPreferences="
-				+ examPreferences + ", subscriptionIds=" + subscriptionIds + ", isPrimeUser=" + isPrimeUser
-				+ ", status=" + status + "]";
+		return "Users [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
+				+ ", phone=" + phone + ", firebaseUID=" + firebaseUID + ", location=" + location + ", examPreferences=" + examPreferences + ", subscriptionIds=" + subscriptionIds
+				+ ", isPrimeUser=" + isPrimeUser + ", status=" + status + ", createdOn=" + createdOn + "]";
 	}
 }

@@ -26,7 +26,7 @@ import com.java.jkpot.repositories.ExamSyllabusRepository;
 
 @RestController
 @RequestMapping("/import")
-public class ExcelToDBController {
+public class ExamSyllabusExcelToDBController {
 
 	@Autowired
 	private ExamSyllabusRepository examSyllabusRepository;
@@ -97,7 +97,7 @@ public class ExcelToDBController {
 		}
 		
 		try {
-			topic = attributes[1].trim();
+			topic = attributes[1].trim().replaceAll(" comma ", ", ");
 		} catch (Exception e) {
 			topic = null;
 		}
@@ -109,7 +109,7 @@ public class ExcelToDBController {
 		}
 		
 		try {
-			subTopic = attributes[3].trim();
+			subTopic = attributes[3].trim().replaceAll(" comma ", ", ");
 		} catch (Exception e) {
 			subTopic = null;
 		}
