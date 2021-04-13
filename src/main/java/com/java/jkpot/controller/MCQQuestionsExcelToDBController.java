@@ -50,7 +50,6 @@ public class MCQQuestionsExcelToDBController {
 			each.setExamId(examId);
 			each.setMockExamId((int)countersDAO.getNextSequenceOfField("mockExamId"));
 		}
-
 		
 		mockExamRepository.saveAll(mockExamList);
 		
@@ -108,9 +107,7 @@ public class MCQQuestionsExcelToDBController {
 
 		try {
 			question = (attributes[2].trim().replaceAll(" comma ", ", "));
-			System.out.println(question);
 			question = question.replaceAll("\n", "\n");
-			System.out.println(question);
 		} catch (Exception e) {
 			question = null;
 		}
