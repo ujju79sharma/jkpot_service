@@ -23,7 +23,7 @@ public class ExamsServiceImpl implements ExamsService {
 	private MongoTemplate mongoTemplate;
 	
 	@Override
-	public ResponseEntity<RestResponse> createExam(int examId, String examName, String examLogo) {
+	public ResponseEntity<RestResponse> createExam(int examConductorId, int examId, String examName, String examLogo) {
 
 		if (examId > 0) {
 			Exams foundExam = mongoTemplate.findOne(Query.query(Criteria.where("examId").is(examId)), Exams.class);
@@ -34,6 +34,8 @@ public class ExamsServiceImpl implements ExamsService {
 					foundExam.setExamName(examName);
 				if (examLogo != null)
 					foundExam.setExamLogo(examLogo);
+				if (examConductorId > 0)
+					foundExam.setExamConductorId(examConductorId);
 
 				mongoTemplate.save(foundExam, "exams");
 				
@@ -51,9 +53,10 @@ public class ExamsServiceImpl implements ExamsService {
 			
 			if (examLogo != null)
 				exam.setExamLogo(examLogo);
-			
 			if (examName != null)
 				exam.setExamName(examName);
+			if (examConductorId > 0)
+				exam.setExamConductorId(examConductorId);
 			
 			exam.setExamId(sequence.getNextSequenceOfField("examId"));
 			

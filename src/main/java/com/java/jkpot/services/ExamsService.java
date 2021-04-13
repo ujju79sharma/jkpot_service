@@ -6,7 +6,7 @@ import com.java.jkpot.api.response.pojo.RestResponse;
 
 public interface ExamsService {
 
-	ResponseEntity<RestResponse> createExam(int examId, String examName, String examLogo);
+	ResponseEntity<RestResponse> createExam(int examConductorId, int examId, String examName, String examLogo);
 	
 	ResponseEntity<RestResponse> findExamById(int examId);
 	

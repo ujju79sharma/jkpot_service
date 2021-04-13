@@ -24,7 +24,8 @@ public class ExamsController {
 	@PostMapping("/create")
 	public ResponseEntity<RestResponse> createNewExam(@RequestBody ExamDetailsRequest examDetailsRequest) {
 		
-		return examService.createExam(examDetailsRequest.getExamId(), examDetailsRequest.getExamName(), examDetailsRequest.getExamLogo());
+		return examService.createExam(examDetailsRequest.getExamConductorId(), examDetailsRequest.getExamId(), 
+				examDetailsRequest.getExamName(), examDetailsRequest.getExamLogo());
 	}
 	
 	@GetMapping("/read/{examId}")
