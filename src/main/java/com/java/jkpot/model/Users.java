@@ -15,7 +15,6 @@ public class Users {
 	private String lastName;
 	private String email;
 	private String phone;
-	private String firebaseUID;
 	private String location;
 	private TreeSet<String> examPreferences;
 	private TreeSet<Integer> subscriptionIds;
@@ -61,14 +60,6 @@ public class Users {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-	}
-
-	public String getFirebaseUID() {
-		return firebaseUID;
-	}
-
-	public void setFirebaseUID(String firebaseUID) {
-		this.firebaseUID = firebaseUID;
 	}
 
 	public String getLocation() {
@@ -128,7 +119,8 @@ public class Users {
 	@Override
 	public String toString() {
 		return "Users [userId=" + userId + ", firstName=" + firstName + ", lastName=" + lastName + ", email=" + email
-				+ ", phone=" + phone + ", firebaseUID=" + firebaseUID + ", location=" + location + ", examPreferences=" + examPreferences + ", subscriptionIds=" + subscriptionIds
-				+ ", isPrimeUser=" + isPrimeUser + ", status=" + status + ", createdOn=" + createdOn + "]";
+				+ ", phone=" + phone + ", location=" + location + ", examPreferences=" + examPreferences
+				+ ", subscriptionIds=" + subscriptionIds + ", isPrimeUser=" + isPrimeUser + ", status=" + status
+				+ ", createdOn=" + createdOn + "]";
 	}
 }

@@ -34,7 +34,6 @@ public class UsersServiceImpl implements UsersService{
 			theUser.setLastName(createUserDetails.getLastName());
 			theUser.setEmail(createUserDetails.getEmail());
 			theUser.setPhone(createUserDetails.getPhone());
-			theUser.setFirebaseUID(createUserDetails.getFirebaseUID());
 			theUser.setLocation(createUserDetails.getLocation());
 
 			if (createUserDetails.getExamPreferences() != null && createUserDetails.getExamPreferences().size() > 0) {
@@ -44,7 +43,7 @@ public class UsersServiceImpl implements UsersService{
 
 			theUser.setPrimeUser(false);
 	
-			if ((theUser.getEmail() != null || theUser.getPhone() != null) && (theUser.getFirebaseUID() != null)) {
+			if (theUser.getPhone() != null) {
 				theUser.setUserId(createUserDetails.getUserId());
 				theUser.setStatus("Active");
 				theUser.setCreatedOn(LocalDate.now());
@@ -70,8 +69,6 @@ public class UsersServiceImpl implements UsersService{
 				theUser.setEmail(createUserDetails.getEmail());
 			if (createUserDetails.getPhone() != null)
 				theUser.setPhone(createUserDetails.getPhone());
-			if (createUserDetails.getFirebaseUID() != null)
-				theUser.setFirebaseUID(createUserDetails.getFirebaseUID());
 			if (createUserDetails.getExamPreferences() != null && createUserDetails.getExamPreferences().size() > 0) {
 				TreeSet<String> examPreferences = new TreeSet<String>(createUserDetails.getExamPreferences());
 				theUser.setExamPreferences(examPreferences);
@@ -126,10 +123,11 @@ public class UsersServiceImpl implements UsersService{
 			
 			if (theUser != null) {
 				
+				theUser.setUserId(null);
 				theUser.setStatus("Inactive");
 				mongoTemplate.save(theUser, "users"); //change the status of the user to Inactive
 				
-				RestResponse restResponse = new RestResponse("SUCCESS", theUser, 200);
+				RestResponse restResponse = new RestResponse("SUCCESS", "User deleted successfully", 200);
 				
 				return ResponseEntity.status(200).body(restResponse);
 				
@@ -138,7 +136,6 @@ public class UsersServiceImpl implements UsersService{
 
 				return ResponseEntity.status(403).body(restResponse);
 			}
-			
 		}else {
 			
 			RestResponse restResponse = new RestResponse("FAILURE", "Please provide a valid userId.", 403);

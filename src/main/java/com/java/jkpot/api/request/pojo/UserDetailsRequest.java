@@ -9,7 +9,6 @@ public class UserDetailsRequest {
 	private String lastName;
 	private String email;
 	private String phone;
-	private String firebaseUID;
 	private String location;
 	private List<String> examPreferences;
 
@@ -51,14 +50,6 @@ public class UserDetailsRequest {
 
 	public void setPhone(String phone) {
 		this.phone = phone;
-	}
-
-	public String getFirebaseUID() {
-		return firebaseUID;
-	}
-
-	public void setFirebaseUID(String firebaseUID) {
-		this.firebaseUID = firebaseUID;
 	}
 
 	public String getLocation() {
