@@ -22,4 +22,11 @@ public class ExamSyllabusController {
 		
 		return examSyllabusService.getExamSyllabusByExamId(examId);
 	}
+	
+	@GetMapping("/syllabus/read/subtopics/{examId}/{topicId}")
+	public ResponseEntity<RestResponse> getExamSubSectionByTopicId(@PathVariable(value = "topicId") int topicId,
+			@PathVariable(value = "examId") int examId) {
+
+		return examSyllabusService.getSubSectionsByExamIdAndTopicId(examId, topicId);
+	}
 }

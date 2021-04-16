@@ -34,4 +34,22 @@ public class ExamSyllabusServiceImpl implements ExamSyllabusService {
 		}
 	}
 
+	@Override
+	public ResponseEntity<RestResponse> getSubSectionsByExamIdAndTopicId(int examId, int topicId) {
+		
+		List<ExamSyllabus> examSyllabusList = examSyllabusRepository.findByExamIdAndTopicId(examId, topicId);
+		
+		if (examSyllabusList != null && examSyllabusList.size() > 0) {
+			
+			RestResponse response = new RestResponse("SUCCESS", examSyllabusList, 200);
+			
+			return ResponseEntity.ok(response);
+		}else {
+			RestResponse response = new RestResponse("FAILURE", examSyllabusList, 204);
+			
+			return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
+		}
+		
+	}
+
 }

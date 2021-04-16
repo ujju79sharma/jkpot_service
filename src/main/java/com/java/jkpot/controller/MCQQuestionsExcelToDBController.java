@@ -23,7 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
 import com.java.jkpot.api.response.pojo.RestResponse;
 import com.java.jkpot.dao.CountersDAO;
 import com.java.jkpot.model.MockExams;
+import com.java.jkpot.model.SectionalMocks;
 import com.java.jkpot.repositories.MockExamRepository;
+import com.java.jkpot.repositories.SectionalMockRepository;
 
 @RestController
 @RequestMapping("/import")
@@ -32,10 +34,13 @@ public class MCQQuestionsExcelToDBController {
 	@Autowired
 	private MockExamRepository mockExamRepository;
 	@Autowired
-	private CountersDAO countersDAO;
+	private SectionalMockRepository sectionalMockRepository;
+	@Autowired
+	private CountersDAO sequence;
 
-	@PostMapping(path = "/excel/data/mcq/{examId}")
-	public ResponseEntity<Object> bulkImportExamSyllabus(@RequestPart(value = "file") MultipartFile file, @PathVariable(value = "examId") int examId)
+	@PostMapping(path = "/excel/data/mcq/{examId}/{sectionalTopicId}/{subSectionalId}")
+	public ResponseEntity<Object> bulkImportExamSyllabus(@RequestPart(value = "file") MultipartFile file, @PathVariable(value = "examId") int examId,
+			@PathVariable(value = "sectionalTopicId") int sectionalTopicId, @PathVariable(value = "subSectionalId") int subSectionalId)
 			throws IOException {
 
 		File files = new File("jkpot/" + file.getOriginalFilename());
@@ -43,19 +48,42 @@ public class MCQQuestionsExcelToDBController {
 		FileOutputStream fout = new FileOutputStream(files);
 		fout.write(file.getBytes());
 		fout.close();
+		RestResponse response = null;
+		if (sectionalTopicId == 0 && subSectionalId == 0) {
+			List<MockExams> mockExamList = getMockExamDetails("jkpot/" + file.getOriginalFilename());
+			for (MockExams each : mockExamList) {
+				each.setExamId(examId);
+				each.setMockExamId((int)sequence.getNextSequenceOfField("mockExamId"));
+			}
+			response = new RestResponse("SUCCESS", mockExamList, 200);
 
-		List<MockExams> mockExamList = getMockExamDetails("jkpot/" + file.getOriginalFilename());
+			mockExamRepository.saveAll(mockExamList);
+		} else if (sectionalTopicId > 0 && subSectionalId > 0) {
+			List<MockExams> mockList = getMockExamDetails("jkpot/" + file.getOriginalFilename());
+			List<SectionalMocks> sectionalMockList = new ArrayList<SectionalMocks>(); 
+			for (MockExams each : mockList) {
 
-		for (MockExams each : mockExamList) {
-			each.setExamId(examId);
-			each.setMockExamId((int)countersDAO.getNextSequenceOfField("mockExamId"));
+				SectionalMocks sectionalMock = new SectionalMocks();
+
+				sectionalMock.setExamId(examId);
+				sectionalMock.setSectionalId(sectionalTopicId);
+				sectionalMock.setSubSectionalId(subSectionalId);
+				sectionalMock.setSectionalMockId((int)sequence.getNextSequenceOfField("sectionalMockId"));
+				sectionalMock.setSectionQuestionNo(each.getSectionQuestionNo());
+				sectionalMock.setQuestion(each.getQuestion());
+				sectionalMock.setAnswer(each.getAnswer());
+				sectionalMock.setSectionName(each.getSectionName());
+				sectionalMock.setOptions(each.getOptions());
+				sectionalMock.setImageAdded(each.isImageAdded());
+				sectionalMock.setImageName(each.getImageName());
+				
+				sectionalMockList.add(sectionalMock);
+			}			
+			response = new RestResponse("SUCCESS", sectionalMockList, 200);
+
+			sectionalMockRepository.saveAll(sectionalMockList);
 		}
-		
-		mockExamRepository.saveAll(mockExamList);
-		
 		files.delete(); // delete the CSV file
-
-		RestResponse response = new RestResponse("SUCCESS", mockExamList, 200);
 
 		return ResponseEntity.status(200).body(response);
 

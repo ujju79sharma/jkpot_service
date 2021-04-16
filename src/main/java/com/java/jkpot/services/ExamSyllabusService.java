@@ -7,4 +7,6 @@ import com.java.jkpot.api.response.pojo.RestResponse;
 public interface ExamSyllabusService {
 
 	ResponseEntity<RestResponse> getExamSyllabusByExamId(int examId);
+
+	ResponseEntity<RestResponse> getSubSectionsByExamIdAndTopicId(int examId, int topicId);
 }

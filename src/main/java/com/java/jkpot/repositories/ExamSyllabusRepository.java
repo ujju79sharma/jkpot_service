@@ -10,4 +10,6 @@ public interface ExamSyllabusRepository extends MongoRepository<ExamSyllabus, Lo
 
 	List<ExamSyllabus> findByExamId(int examId);
 
+	List<ExamSyllabus> findByExamIdAndTopicId(int examId, int topicId);
+
 }
