@@ -10,7 +10,7 @@ public interface ExamsService {
 	
 	ResponseEntity<RestResponse> findExamById(int examId);
 	
-	ResponseEntity<RestResponse> findAllExams();
+	ResponseEntity<RestResponse> findAllExams(int examConductorId);
 	
 	ResponseEntity<RestResponse> deleteExamData (int examId);
 }

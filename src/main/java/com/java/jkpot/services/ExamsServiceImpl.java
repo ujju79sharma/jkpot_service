@@ -92,10 +92,10 @@ public class ExamsServiceImpl implements ExamsService {
 	}
 
 	@Override
-	public ResponseEntity<RestResponse> findAllExams() {
+	public ResponseEntity<RestResponse> findAllExams(int examConductorId) {
 		
-		List<Exams> foundExams = mongoTemplate.findAll(Exams.class);
-		
+		List<Exams> foundExams = mongoTemplate.find(Query.query(Criteria.where("examConductorId").is(examConductorId)),Exams.class);
+
 		if (foundExams != null && foundExams.size() > 0) {
 			RestResponse response = new RestResponse("SUCCESS", foundExams, 200);
 			

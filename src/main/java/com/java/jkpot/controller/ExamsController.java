@@ -34,8 +34,8 @@ public class ExamsController {
 		return examService.findExamById(examId);
 	}
 	
-	@GetMapping("/findAllExams")
-	public ResponseEntity<RestResponse> findAllExam() {
+	@GetMapping("/findAllExams/{examConductorId}")
+	public ResponseEntity<RestResponse> findAllExam(@PathVariable(value = "examConductorId") int examConductorId) {
 
 		return examService.findAllExams();
 	}
