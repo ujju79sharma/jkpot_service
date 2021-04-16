@@ -37,7 +37,7 @@ public class ExamsController {
 	@GetMapping("/findAllExams/{examConductorId}")
 	public ResponseEntity<RestResponse> findAllExam(@PathVariable(value = "examConductorId") int examConductorId) {
 
-		return examService.findAllExams();
+		return examService.findAllExams(examConductorId);
 	}
 	
 	@DeleteMapping("/delete/{examId}")
