@@ -1,12 +1,18 @@
 package com.java.jkpot.services;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import com.java.jkpot.api.response.pojo.ExamSyllabusResponse;
 import com.java.jkpot.api.response.pojo.RestResponse;
 import com.java.jkpot.model.ExamSyllabus;
 import com.java.jkpot.repositories.ExamSyllabusRepository;
@@ -24,8 +30,14 @@ public class ExamSyllabusServiceImpl implements ExamSyllabusService {
 		
 		if (examSyllabusList != null && examSyllabusList.size() > 0) {
 			
-			RestResponse response = new RestResponse("SUCCESS", examSyllabusList, 200);
+			LinkedHashMap<String,ExamSyllabusResponse> finalSyllabusResponse = new LinkedHashMap<>();
+			for (ExamSyllabus each : examSyllabusList) {
+				ExamSyllabusResponse syllabusObject = new ExamSyllabusResponse(each.getTopicId(), each.getTopic());
+				finalSyllabusResponse.put(each.getTopic(),syllabusObject);
+			}
 			
+			RestResponse response = new RestResponse("SUCCESS", finalSyllabusResponse.values(), 200);
+
 			return ResponseEntity.ok(response);
 		}else {
 			RestResponse response = new RestResponse("FAILURE", examSyllabusList, 204);
