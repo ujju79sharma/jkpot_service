@@ -1,11 +1,12 @@
 package com.java.jkpot.services;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,21 +143,18 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			
 //			students.sort(new StudentsSort());
 			
-			TreeMap<String, StudentsSectionalMarks> studentMarks = new TreeMap<String, StudentsSectionalMarks>();
-			
+			HashMap<String, StudentsSectionalMarks> studentMarks = new HashMap<String, StudentsSectionalMarks>();
+
 			for (StudentsSectionalMarks each : students)
 				studentMarks.put(each.getUserId(), each);
-			
-			if (students.size() >= 10) {
-				
-				Map<String, Object> finalStudents = new HashMap<String, Object>();
-				
-				for (StudentsSectionalMarks each : students) {
-					finalStudents.put(each.getUserId(), each);
-				}
-				if (finalStudents.keySet().contains(userId)) {
 
-					RestResponse response = new RestResponse("SUCCESS", finalStudents.values(), 200);
+			studentMarks = sortByValue(studentMarks);
+			
+			if (studentMarks.size() >= 10) {
+				
+				if (studentMarks.keySet().contains(userId)) {
+
+					RestResponse response = new RestResponse("SUCCESS", studentMarks.values(), 200);
 					
 					return ResponseEntity.ok(response);
 				}else {
@@ -164,9 +162,11 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 					StudentsSectionalMarks usersLatestMarks = mongoTemplate.findOne(Query.query(Criteria.where(userId).is(userId))
 							.with(Sort.by(Sort.Direction.DESC, "studentSectionalMarksId")), StudentsSectionalMarks.class);
 					
-					finalStudents.put(userId, usersLatestMarks);
+					studentMarks.put(userId, usersLatestMarks);
 					
-					RestResponse response = new RestResponse("SUCCESS", finalStudents.values(), 200);
+					studentMarks = sortByValue(studentMarks);
+					
+					RestResponse response = new RestResponse("SUCCESS", studentMarks.values(), 200);
 					
 					return ResponseEntity.ok(response);
 				}
@@ -190,4 +190,27 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			return -1*Double.compare(o1.getTotalMarks(), o2.getTotalMarks());
 		}
 	}
+	
+	public static HashMap<String, StudentsSectionalMarks> sortByValue(HashMap<String, StudentsSectionalMarks> hm)
+    {
+        // Create a list from elements of HashMap
+        List<Map.Entry<String, StudentsSectionalMarks>> list =
+               new LinkedList<Map.Entry<String, StudentsSectionalMarks> >(hm.entrySet());
+  
+        // Sort the list
+        Collections.sort(list, new Comparator<Map.Entry<String, StudentsSectionalMarks> >() {
+            public int compare(Map.Entry<String, StudentsSectionalMarks> o1, 
+                               Map.Entry<String, StudentsSectionalMarks> o2)
+            {
+                return -1*Double.compare(o1.getValue().getTotalMarks(),o2.getValue().getTotalMarks());
+            }
+        });
+          
+        // put data from sorted list to hashmap 
+        HashMap<String, StudentsSectionalMarks> temp = new LinkedHashMap<String, StudentsSectionalMarks>();
+        for (Map.Entry<String, StudentsSectionalMarks> aa : list) {
+            temp.put(aa.getKey(), aa.getValue());
+        }
+        return temp;
+    }
 }
