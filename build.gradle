@@ -21,17 +21,7 @@ dependencies {
 	implementation 'org.mongodb:mongo-java-driver:3.12.7'
     //implementation 'com.google.code.gson:gson'
     implementation 'joda-time:joda-time:2.10.9'
-    implementation group: 'commons-codec', name: 'commons-codec', version: '1.13'
-	implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
-	implementation group: 'org.apache.commons', name: 'commons-compress', version: '1.19'
-	implementation group: 'org.apache.commons', name: 'commons-math3', version: '3.6.1'
-	implementation group: 'com.github.virtuald', name: 'curvesapi', version: '1.06'
-	implementation group: 'org.apache.poi', name: 'poi', version: '4.1.2'
-	implementation group: 'com.github.ozlerhakan', name: 'poiji', version: '3.0.3'
-	implementation group: 'org.apache.poi', name: 'poi-ooxml', version: '4.1.2'
-	implementation group: 'org.apache.poi', name: 'poi-ooxml-schemas', version: '4.1.2'
-	implementation group: 'com.zaxxer', name: 'SparseBitSet', version: '1.2'
-	implementation group: 'org.apache.xmlbeans', name: 'xmlbeans', version: '3.1.0'
+
 }
 
 task fatJar(type: Jar) {
