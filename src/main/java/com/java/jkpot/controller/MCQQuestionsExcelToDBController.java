@@ -128,38 +128,41 @@ public class MCQQuestionsExcelToDBController {
 		}
 
 		try {
-			sectionQuestionNo = Integer.parseInt(attributes[1].trim());
+			sectionQuestionNo = Integer.parseInt(attributes[1]);
 		} catch (Exception e) {
 			sectionQuestionNo = 0;
 		}
 
 		try {
-			question = (attributes[2].trim().replaceAll(" comma ", ", "));
-			question = question.replaceAll("\n", "\n");
+			question = (attributes[2].replaceAll("comma ", ", "));
 		} catch (Exception e) {
 			question = null;
 		}
 		
 		try {
-			options.add(attributes[3].trim().replaceAll(" comma ", ", "));
+			attributes[3] = attributes[3].trim();
+			options.add(attributes[3].replaceAll("comma ", ", "));
 		} catch (Exception e) {
 			options = new ArrayList<>();
 		}
 		
 		try {
-			options.add(attributes[4].trim().replaceAll(" comma ", ", "));
+			attributes[4] = attributes[4].trim();
+			options.add(attributes[4].replaceAll("comma ", ", "));
 		} catch (Exception e) {
 			options = new ArrayList<>();
 		}
 		
 		try {
-			options.add(attributes[5].trim().replaceAll(" comma ", ", "));
+			attributes[5] = attributes[5].trim();
+			options.add(attributes[5].replaceAll("comma ", ", "));
 		} catch (Exception e) {
 			options = new ArrayList<>();
 		}
 		
 		try {
-			options.add(attributes[6].trim().replaceAll(" comma ", ", "));
+			attributes[6] = attributes[6].trim();
+			options.add(attributes[6].replaceAll("comma ", ", "));
 		} catch (Exception e) {
 			options = new ArrayList<>();
 		}

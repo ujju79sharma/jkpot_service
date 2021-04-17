@@ -97,7 +97,7 @@ public class ExamSyllabusExcelToDBController {
 		}
 		
 		try {
-			topic = attributes[1].trim().replaceAll(" comma ", ", ");
+			topic = attributes[1].trim().replaceAll("comma ", ", ");
 		} catch (Exception e) {
 			topic = null;
 		}
@@ -109,7 +109,7 @@ public class ExamSyllabusExcelToDBController {
 		}
 		
 		try {
-			subTopic = attributes[3].trim().replaceAll(" comma ", ", ");
+			subTopic = attributes[3].trim().replaceAll("comma ", ", ");
 		} catch (Exception e) {
 			subTopic = null;
 		}

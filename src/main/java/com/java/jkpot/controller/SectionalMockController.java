@@ -19,25 +19,25 @@ public class SectionalMockController {
 
 	@Autowired
 	private SectionalMockService sectionalMockService;
-	
+
 	@GetMapping(value = "/find/{sectionalId}/{subSectionalId}")
 	public ResponseEntity<RestResponse> findSectionalMockBySectionalIdAndSubSectionalId(@PathVariable(value = "sectionalId")
 			int sectionalId, @PathVariable(value = "subSectionalId") int subSectionalId) {
-		
+
 		return sectionalMockService.findSectionalMockBySectionalIdAndSubSectionalId(sectionalId, subSectionalId);
 	}
-	
+
 	@PostMapping(value = "student/answers")
 	public ResponseEntity<RestResponse> findStudentsMarks(@RequestBody StudentAnswersRequest studentAnswersRequest) {
-		
+
 		return sectionalMockService.findStudentMarks(studentAnswersRequest);
 	}
-	
+
 	@GetMapping(value = "/fetch/top/students/{sectionId}/{subSectionId}/{userId}")
 	public ResponseEntity<RestResponse> findHighestMarksOfStudents(@PathVariable(value = "sectionId")
 			int sectionalId, @PathVariable(value = "subSectionId") int subSectionalId, @PathVariable(value = "userId")
 			String userId) {
-		
+
 		return sectionalMockService.findHighestMarksOfStudents(sectionalId, subSectionalId, userId);
 	}
 }

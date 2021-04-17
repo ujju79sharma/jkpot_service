@@ -43,18 +43,18 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 	@Override
 	public ResponseEntity<RestResponse> findSectionalMockBySectionalIdAndSubSectionalId(int sectionalId,
 			int subSectionalId) {
-		
+
 		List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findBySectionalIdAndSubSectionalId(sectionalId, subSectionalId);
-		
+
 		if (sectionalMocks.size() > 0) {
-			
+
 			RestResponse response = new RestResponse("SUCCESS", sectionalMocks, 200);
-			
+
 			return ResponseEntity.ok(response);
 		}else {
-			
+
 			RestResponse response = new RestResponse("FAILURE", "data not found", 404);
-			
+
 			return ResponseEntity.status(404).body(response);
 		}
 	}
@@ -64,9 +64,9 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 
 		List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findBySectionalIdAndSubSectionalId(studentAnswersRequest.getSectionalId(),
 				studentAnswersRequest.getSubSectionId());
-		
+
 		if (sectionalMocks.size() > 0 && studentAnswersRequest.getUserId() != null) {
-			
+
 			double correctAnswer = 0;
 			double incorrectAnswer = 0;
 			int skippedQuestion = 0;
@@ -89,7 +89,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 					skippedQuestions.add(sectionalMocks.get(i).getSectionQuestionNo());
 				}
 			}
-			
+
 			double totalMarks = correctAnswer-incorrectAnswer*0.25;
 			
 			StudentsSectionalMarks sectionalMarks = new StudentsSectionalMarks();
