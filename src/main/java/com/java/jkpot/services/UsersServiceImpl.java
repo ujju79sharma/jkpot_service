@@ -47,6 +47,8 @@ public class UsersServiceImpl implements UsersService{
 				theUser.setUserId(createUserDetails.getUserId());
 				theUser.setStatus("Active");
 				theUser.setCreatedOn(LocalDate.now());
+				theUser.setFcmToken(createUserDetails.getFcmToken());
+				
 				mongoTemplate.save(theUser, "users"); // save the object
 			}
 
@@ -76,6 +78,9 @@ public class UsersServiceImpl implements UsersService{
 			if (createUserDetails.getLocation() != null && createUserDetails.getLocation().length() > 0) {
 				theUser.setLocation(createUserDetails.getLocation());
 			}
+			
+			if (createUserDetails.getFcmToken() != null)
+				theUser.setFcmToken(createUserDetails.getFcmToken());
 
 			mongoTemplate.save(theUser, "users"); // save the new object
 
