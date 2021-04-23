@@ -11,6 +11,7 @@ public class UserDetailsRequest {
 	private String phone;
 	private String location;
 	private List<String> examPreferences;
+	private String fcmToken;
 
 	public String getUserId() {
 		return userId;
@@ -70,5 +71,13 @@ public class UserDetailsRequest {
 			this.examPreferences= (examPreferencesList);
 		else
 			this.examPreferences.addAll(examPreferencesList);
+	}
+
+	public String getFcmToken() {
+		return fcmToken;
+	}
+
+	public void setFcmToken(String fcmToken) {
+		this.fcmToken = fcmToken;
 	}
 }

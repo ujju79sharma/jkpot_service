@@ -21,6 +21,7 @@ public class Users {
 	private boolean isPrimeUser;
 	private String status;
 	private LocalDate createdOn;
+	private String fcmToken;
 
 	public String getUserId() {
 		return userId;
@@ -114,6 +115,14 @@ public class Users {
 
 	public void setCreatedOn(LocalDate createdOn) {
 		this.createdOn = createdOn;
+	}
+
+	public String getFcmToken() {
+		return fcmToken;
+	}
+
+	public void setFcmToken(String fcmToken) {
+		this.fcmToken = fcmToken;
 	}
 
 	@Override
