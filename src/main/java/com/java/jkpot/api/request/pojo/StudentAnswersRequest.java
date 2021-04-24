@@ -5,6 +5,7 @@ import java.util.List;
 public class StudentAnswersRequest {
 
 	private String userId;
+	private int examId;
 	private int sectionalId;
 	private int subSectionId;
 	private List<String> answers;
@@ -15,6 +16,14 @@ public class StudentAnswersRequest {
 
 	public void setUserId(String userId) {
 		this.userId = userId;
+	}
+
+	public int getExamId() {
+		return examId;
+	}
+
+	public void setExamId(int examId) {
+		this.examId = examId;
 	}
 
 	public int getSectionalId() {

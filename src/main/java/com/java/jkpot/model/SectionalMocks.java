@@ -1,5 +1,6 @@
 package com.java.jkpot.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -17,7 +18,7 @@ public class SectionalMocks {
 	private int sectionQuestionNo;
 	private String question;
 	private String answer;
-	private List<String> options;
+	private List<String> options = new ArrayList<>();
 	private boolean imageAdded;
 	private String imageName;
 
@@ -89,8 +90,8 @@ public class SectionalMocks {
 		return options;
 	}
 
-	public void setOptions(List<String> options) {
-		this.options = options;
+	public void setOptions(List<String> optionList) {
+		this.options.addAll(optionList);
 	}
 
 	public boolean isImageAdded() {

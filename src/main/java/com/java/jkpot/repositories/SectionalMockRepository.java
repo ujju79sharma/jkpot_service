@@ -8,6 +8,6 @@ import com.java.jkpot.model.SectionalMocks;
 
 public interface SectionalMockRepository extends MongoRepository<SectionalMocks, Long>{
 
-	List<SectionalMocks> findBySectionalIdAndSubSectionalId(int sectionalId, int subSectionalId);
+	List<SectionalMocks> findByExamIdAndSectionalIdAndSubSectionalId(int examId, int sectionalId, int subSectionalId);
 
 }
