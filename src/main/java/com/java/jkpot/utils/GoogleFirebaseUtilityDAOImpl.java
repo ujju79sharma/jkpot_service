@@ -16,8 +16,7 @@ public class GoogleFirebaseUtilityDAOImpl implements GoogleFirebaseUtilityDAO {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public void sendNotificationToUser(String userName, long senderId, long receiverId, String profilePhoto,
-			String receiverFcmToken, String message, String messageBody, String deepLink) {
+	public void sendNotificationToUser(String userName, String senderId, String receiverFcmToken, String message, String messageBody, String deepLink) {
 
 		try {
 
@@ -33,7 +32,6 @@ public class GoogleFirebaseUtilityDAOImpl implements GoogleFirebaseUtilityDAO {
 			dataJson.put("title", userName);
 			dataJson.put("detail", messageBody);
 			dataJson.put("deepLink", deepLink);
-			dataJson.put("url", profilePhoto);
 			dataJson.put("userId", senderId);
 			json.put("to", receiverFcmToken);
 			json.put("data", dataJson);

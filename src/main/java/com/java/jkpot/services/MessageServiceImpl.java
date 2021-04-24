@@ -16,6 +16,7 @@ import com.java.jkpot.api.response.pojo.RestResponse;
 import com.java.jkpot.dao.CountersDAO;
 import com.java.jkpot.model.Messages;
 import com.java.jkpot.model.Users;
+import com.java.jkpot.utils.GoogleFirebaseUtilityDAO;
 
 @Service
 public class MessageServiceImpl implements MessageService{
@@ -24,6 +25,8 @@ public class MessageServiceImpl implements MessageService{
 	private MongoTemplate mongoTemplate;
 	@Autowired
 	private CountersDAO sequence;
+	@Autowired
+	private GoogleFirebaseUtilityDAO pushNotificationDAO;
 	
 	@Override
 	public ResponseEntity<RestResponse> createAMessage(int messageId, String senderId, String receiverId, String text,
@@ -50,11 +53,17 @@ public class MessageServiceImpl implements MessageService{
 				message.setDate(date);
 				
 				if (text != null && senderId !=null && receiverId != null && timeStamp != null) {
+					
+					String notificationHeader = senderInfo.getFirstName()+" has messaged you"; 
+					String deepLink = "1";
+
+					pushNotificationDAO.sendNotificationToUser(senderInfo.getFirstName(), senderId, receiverInfo.getFcmToken(), notificationHeader, text, deepLink);
+
 					message.setMessageId(sequence.getNextSequenceOfField("messageId"));
 					mongoTemplate.save(message, "messages");
-					
+
 					RestResponse response = new RestResponse("SUCCESS", message, 200);
-					
+
 					return ResponseEntity.ok(response);
 				}
 				else {

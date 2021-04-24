@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -93,7 +94,7 @@ public class MCQQuestionsExcelToDBController {
 		List<MockExams> mockExamList = new ArrayList<>();
 
 		Path pathToFile = Paths.get(file);
-		try (BufferedReader br = Files.newBufferedReader(pathToFile)) {
+		try (BufferedReader br = Files.newBufferedReader(pathToFile, Charset.forName("ISO-8859-1"))) {
 			String row = br.readLine();
 			while (row != null) {
 				String[] attributes = row.split(",");
