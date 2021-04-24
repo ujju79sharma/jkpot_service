@@ -14,4 +14,6 @@ public interface UsersService {
 
 	ResponseEntity<RestResponse> deleteAUser(String userId);
 
+	ResponseEntity<RestResponse> updateUserFCMTokenUser(UserDetailsRequest createUserDetails);
+
 }

@@ -89,6 +89,8 @@ public class UsersServiceImpl implements UsersService{
 			return ResponseEntity.status(200).body(restResponse);
 		}
 	}
+	
+	
 
 	@Override
 	public ResponseEntity<RestResponse> findAUser(String userId) {
@@ -146,6 +148,38 @@ public class UsersServiceImpl implements UsersService{
 			RestResponse restResponse = new RestResponse("FAILURE", "Please provide a valid userId.", 403);
 
 			return ResponseEntity.status(403).body(restResponse);
+		}
+	}
+
+
+
+	@Override
+	public ResponseEntity<RestResponse> updateUserFCMTokenUser(UserDetailsRequest createUserDetails) {
+		
+		if (createUserDetails.getFcmToken() != null) {
+			
+			Users user = usersDAO.findUsersById(createUserDetails.getUserId());
+			
+			if (user != null) {
+				
+				user.setFcmToken(createUserDetails.getFcmToken());
+				
+				mongoTemplate.save(user, "users");
+				
+				RestResponse restResponse = new RestResponse("SUCCESS", user, 200);
+
+				return ResponseEntity.status(200).body(restResponse);
+				
+			}else {
+				
+				RestResponse restResponse = new RestResponse("FAILURE", "No user found.", 404);
+
+				return ResponseEntity.status(404).body(restResponse);
+			}
+		}else {
+			RestResponse restResponse = new RestResponse("FAILURE", "provide request body", 401);
+
+			return ResponseEntity.status(401).body(restResponse);
 		}
 	}
 }

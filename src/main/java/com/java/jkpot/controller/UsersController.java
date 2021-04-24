@@ -38,4 +38,11 @@ public class UsersController {
 
 		return usersService.deleteAUser(userId);
 	}
+	
+	@PostMapping(value = "/update/fcmtoken")
+	public ResponseEntity<RestResponse> updateUserFCMToken(@RequestBody UserDetailsRequest createUserDetails) {
+
+		return usersService.updateUserFCMTokenUser(createUserDetails);
+	}
+	
 }
