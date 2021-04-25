@@ -147,9 +147,12 @@ public class StudentsSectionalMarks {
 
 	@Override
 	public String toString() {
-		return "StudentsSectionalMarks [studentSectionalMarksId=" + studentSectionalMarksId + ", userId=" + userId
-				+ ", totalMarks=" + totalMarks + ", correctAnswers=" + correctAnswers + ", incorrectMarks="
-				+ incorrectAnswers + ", correctQuestions=" + correctQuestions + ", incorrectQuestions="
-				+ incorrectQuestions + "]";
+		return "StudentsSectionalMarks [studentSectionalMarksId=" + studentSectionalMarksId + ", sectionalId="
+				+ sectionalId + ", sectionalName=" + sectionalName + ", subSectionalId=" + subSectionalId
+				+ ", subSectionName=" + subSectionName + ", examId=" + examId + ", userId=" + userId + ", userName="
+				+ userName + ", totalMarks=" + totalMarks + ", correctAnswers=" + correctAnswers + ", skippedQuestion="
+				+ skippedQuestion + ", incorrectAnswers=" + incorrectAnswers + ", correctQuestions=" + correctQuestions
+				+ ", incorrectQuestions=" + incorrectQuestions + ", skippedQuestions=" + skippedQuestions + "]";
 	}
+
 }

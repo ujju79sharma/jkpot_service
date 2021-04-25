@@ -8,10 +8,10 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -57,7 +57,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 
 		if (sectionalMocks.size() > 0) {
 
-			RestResponse response = new RestResponse("SUCCESS", sectionalMocks, 200);
+			RestResponse response = new RestResponse("SUCCESS", sectionalMocks.stream().peek(e->e.setAnswer(null)).collect(Collectors.toList()), 200);
 
 			return ResponseEntity.ok(response);
 		}else {
@@ -71,10 +71,10 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 	@Override
 	public ResponseEntity<RestResponse> findStudentMarks(StudentAnswersRequest studentAnswersRequest) {
 
-		List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalId(studentAnswersRequest.getExamId(),studentAnswersRequest.getSectionalId(),
-				studentAnswersRequest.getSubSectionId());
-
-		if (sectionalMocks.size() > 0 && studentAnswersRequest.getUserId() != null) {
+		List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalId(studentAnswersRequest.getExamId(), 
+				studentAnswersRequest.getSectionalId(),studentAnswersRequest.getSubSectionId());
+		
+		if (sectionalMocks.size() > 0 && studentAnswersRequest.getUserId() != null && sectionalMocks.size() == studentAnswersRequest.getAnswers().size()) {
 
 			double correctAnswer = 0;
 			double incorrectAnswer = 0;
@@ -86,11 +86,11 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			for (int i = 0; i <sectionalMocks.size(); i++) {
 				
 				if (studentAnswersRequest.getAnswers().get(i) != null && studentAnswersRequest.getAnswers().get(i).length() > 0 && 
-				sectionalMocks.get(i).getAnswer().equals(studentAnswersRequest.getAnswers().get(i))) {
+				sectionalMocks.get(i).getAnswer().equalsIgnoreCase(studentAnswersRequest.getAnswers().get(i))) {
 					correctAnswer = correctAnswer+1;
 					correctAnswers.add(sectionalMocks.get(i).getSectionQuestionNo());
 				}else if (studentAnswersRequest.getAnswers().get(i) != null && studentAnswersRequest.getAnswers().get(i).length() > 0 && 
-				!sectionalMocks.get(i).getAnswer().equals(studentAnswersRequest.getAnswers().get(i))) {
+				!sectionalMocks.get(i).getAnswer().equalsIgnoreCase(studentAnswersRequest.getAnswers().get(i))) {
 					incorrectAnswer = incorrectAnswer+1;
 					incorrectAnswers.add(sectionalMocks.get(i).getSectionQuestionNo());
 				}else {
@@ -135,7 +135,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			RestResponse response = new RestResponse("SUCCESS", sectionalMarks, 200);
 			return ResponseEntity.ok(response);
 		}else {
-			RestResponse response = new RestResponse("FAILURE", "Sectional Mock Not Exist", 404);
+			RestResponse response = new RestResponse("FAILURE", "Sectional Mock not exists", 404);
 			return ResponseEntity.status(404).body(response);
 		}
 	}
@@ -147,41 +147,50 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 
 			List<StudentsSectionalMarks> students = studentsSectionalMarksRepository.findByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
 
-			List<String> studentIds = students.stream().map(e->e.getUserId()).distinct().collect(Collectors.toList());
-
-			students = mongoTemplate.find(Query.query(Criteria.where("userId").in(studentIds)).with(Sort.by(Sort.Direction.ASC, "totalMarks")), StudentsSectionalMarks.class);
-
-			HashMap<String, StudentsSectionalMarks> studentMarks = new HashMap<String, StudentsSectionalMarks>();
-
-			for (StudentsSectionalMarks each : students)
-				studentMarks.put(each.getUserId(), each);
-
-			studentMarks = sortByValue(studentMarks);
+			students = students.stream().peek(e->e.setCorrectAnswers(0)).peek(e1 -> e1.setCorrectQuestions(null)).peek(e2->e2.setIncorrectQuestions(null)).peek(e3->e3.setSkippedQuestions(null))
+						.peek(e4->e4.setIncorrectAnswers(0)).peek(e5->e5.setSkippedQuestion(0)).collect(Collectors.toList());
 			
-			if (studentMarks.size() >= 10) {
+			if (students.size() > 0) {
 				
-				if (studentMarks.keySet().contains(userId)) {
-
-					RestResponse response = new RestResponse("SUCCESS", studentMarks.values(), 200);
+				students.sort(new StudentsSorting());
+	
+				HashMap<String, StudentsSectionalMarks> studentMarks = new HashMap<String, StudentsSectionalMarks>();
+	
+				for (StudentsSectionalMarks each : students)
+					studentMarks.put(each.getUserId(), each);
+	
+				studentMarks = sortByValue(studentMarks);
+				
+				if (studentMarks.size() >= 10) {
 					
-					return ResponseEntity.ok(response);
+					if (studentMarks.keySet().contains(userId)) { // if userId exist in top 10 list
+	
+						RestResponse response = new RestResponse("SUCCESS", studentMarks.values(), 200);
+						
+						return ResponseEntity.ok(response);
+					}else {
+					
+						students = students.stream().filter(e->e.getUserId().equals(userId)).collect(Collectors.toList());
+						
+						StudentsSectionalMarks usersLatestMarks = students.get(studentMarks.size()-1);
+						
+						studentMarks.put(userId, usersLatestMarks);
+						
+						studentMarks = sortByValue(studentMarks);
+						
+						RestResponse response = new RestResponse("SUCCESS", studentMarks.values(), 200);
+						
+						return ResponseEntity.ok(response);
+					}
 				}else {
-				
-					StudentsSectionalMarks usersLatestMarks = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(userId))
-							.with(Sort.by(Sort.Direction.DESC, "studentSectionalMarksId")), StudentsSectionalMarks.class);
-					
-					studentMarks.put(userId, usersLatestMarks);
-					
-					studentMarks = sortByValue(studentMarks);
-					
 					RestResponse response = new RestResponse("SUCCESS", studentMarks.values(), 200);
 					
 					return ResponseEntity.ok(response);
 				}
 			}else {
-				RestResponse response = new RestResponse("SUCCESS", studentMarks.values(), 200);
+				RestResponse response = new RestResponse("SUCCESS", "No mock given by the user.", 204);
 				
-				return ResponseEntity.ok(response);
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 			}
 		}else {
 			
@@ -204,16 +213,18 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 
 			if (usersMocks.size() > 0) {
 
-				List<StudentsRankingResponse> usersRankingInMocks = new ArrayList<>();
 				List<Integer> sectionalId = new ArrayList<>(usersMocks.values());
 				List<Integer> subSectionalId = new ArrayList<>(usersMocks.keySet());
-				List<Integer> examId = usersMocksList.stream().map(e->e.getExamId()).collect(Collectors.toList());
-
-				Map<String, List<StudentsRankingResponse>> finalResponse = new HashMap<String, List<StudentsRankingResponse>>();
+				Set<Integer> examId = usersMocksList.stream().map(e->e.getExamId()).collect(Collectors.toSet());
+				
+				LinkedHashMap<String, List<StudentsRankingResponse>> finalResponse = new LinkedHashMap<String, List<StudentsRankingResponse>>();
 			
-				for (Integer eachExamId : examId) {	
+				for (Integer eachExamId : examId) {
+
 					for (int i = 0; i < subSectionalId.size(); i++) {
-	
+						
+						List<StudentsRankingResponse> usersRankingInMocks = new ArrayList<>();
+						
 						RestTemplate restTemplate = new RestTemplate();
 	
 						HttpHeaders headers = new HttpHeaders();
@@ -222,21 +233,21 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 	
 						// query is a grapql query wrapped into a String
 						String query = "http://localhost:8080/sectionalMock/fetch/top/students/"+eachExamId+"/"+sectionalId.get(i)+"/"+subSectionalId.get(i)+"/"+userId;
-	
+
 						try {
 							ResponseEntity<String> response = restTemplate.getForEntity(query, String.class);
-	
+
 							@SuppressWarnings("deprecation")
 							JsonObject jsonObject = new JsonParser().parse(response.getBody()).getAsJsonObject();
 		
 							JsonArray jsonMocksArray = jsonObject.get("data").getAsJsonArray();
-							
+
 							for (JsonElement each : jsonMocksArray) {
 
 								StudentsRankingResponse sectionalMarks = new StudentsRankingResponse();
 
 								sectionalMarks.setUserId(each.getAsJsonObject().get("userId").getAsString());
-								sectionalMarks.setTotalMarks(each.getAsJsonObject().get("totalMarks").getAsInt());
+								sectionalMarks.setTotalMarks(each.getAsJsonObject().get("totalMarks").getAsDouble());
 								sectionalMarks.setUserName(each.getAsJsonObject().get("userName").getAsString());
 								sectionalMarks.setSectionalName(each.getAsJsonObject().get("sectionalName").getAsString());
 								sectionalMarks.setSubSectionName(each.getAsJsonObject().get("subSectionName").getAsString());
@@ -250,24 +261,24 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 							return ResponseEntity.status(e.getRawStatusCode()).body(response);
 						}
 
-						finalResponse.put(usersMocksList.get(0).getSubSectionName(), usersRankingInMocks);
-
+						finalResponse.put(usersRankingInMocks.get(0).getSubSectionName(), usersRankingInMocks);
 					}
 				}
-					RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
 
-					return ResponseEntity.ok(response);
-				}else {
-					RestResponse response = new RestResponse("SUCCESS", "Student has not given any mock test.", 204);
-					return ResponseEntity.status(200).body(response);
-				}
+				RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
+
+				return ResponseEntity.ok(response);
 			}else {
-				
-				RestResponse response = new RestResponse("SUCCESS", "No data available.", 204);
-				
+				RestResponse response = new RestResponse("SUCCESS", "Student has not given any mock test.", 204);
 				return ResponseEntity.status(200).body(response);
 			}
+		}else {
+
+			RestResponse response = new RestResponse("SUCCESS", "No data available.", 204);
+
+			return ResponseEntity.status(200).body(response);
 		}
+	}
 
 	public static HashMap<String, StudentsSectionalMarks> sortByValue(HashMap<String, StudentsSectionalMarks> hm) {
         // Create a list from elements of HashMap
@@ -292,11 +303,11 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 	}
 }
 
-	class StudentsSort implements Comparator<StudentsSectionalMarks> {
+class StudentsSorting implements Comparator<StudentsSectionalMarks> {
 
-		@Override
-		public int compare(StudentsSectionalMarks o1, StudentsSectionalMarks o2) {
-			return -1*Double.compare(o1.getTotalMarks(), o2.getTotalMarks());
-		}
-	
+	@Override
+	public int compare(StudentsSectionalMarks o1, StudentsSectionalMarks o2) {
+		
+		return Double.compare(o1.getTotalMarks(), o2.getTotalMarks());
 	}
+}

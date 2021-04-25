@@ -47,4 +47,10 @@ public class StudentsRankingResponse {
 	public void setTotalMarks(double totalMarks) {
 		this.totalMarks = totalMarks;
 	}
+
+	@Override
+	public String toString() {
+		return "StudentsRankingResponse [userId=" + userId + ", sectionalName=" + sectionalName + ", subSectionName="
+				+ subSectionName + ", userName=" + userName + ", totalMarks=" + totalMarks + "]";
+	}
 }
