@@ -35,11 +35,13 @@ public class SectionalMockController {
 		return sectionalMockService.findStudentMarks(studentAnswersRequest);
 	}
 
-	@GetMapping(value = "/fetch/top/students/{sectionId}/{subSectionId}/{userId}")
-	public ResponseEntity<RestResponse> findHighestMarksOfStudents(@PathVariable(value = "sectionId")
-			int sectionalId, @PathVariable(value = "subSectionId") int subSectionalId, @PathVariable(value = "userId") String userId) {
+	@GetMapping(value = "/fetch/top/students/{examId}/{sectionId}/{subSectionId}/{userId}")
+	public ResponseEntity<RestResponse> findHighestMarksOfStudents(@PathVariable(value = "examId") int examId,
+			@PathVariable(value = "sectionId") int sectionalId, 
+			@PathVariable(value = "subSectionId") int subSectionalId, 
+			@PathVariable(value = "userId") String userId) {
 
-		return sectionalMockService.findHighestMarksOfStudents(sectionalId, subSectionalId, userId);
+		return sectionalMockService.findHighestMarksOfStudents(examId, sectionalId, subSectionalId, userId);
 	}
 	
 	@GetMapping(value = "/fetch/ranking/allmocks/{userId}")

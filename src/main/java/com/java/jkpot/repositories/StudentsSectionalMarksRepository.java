@@ -10,4 +10,6 @@ public interface StudentsSectionalMarksRepository extends MongoRepository<Studen
 
 	List<StudentsSectionalMarks> findBySectionalIdAndSubSectionalId(int sectionalId, int subSectionalId);
 
+	List<StudentsSectionalMarks> findByExamIdAndSectionalIdAndSubSectionalId(int examId, int sectionalId, int subSectionalId);
+
 }
