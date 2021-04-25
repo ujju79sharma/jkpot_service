@@ -16,4 +16,6 @@ public interface UsersService {
 
 	ResponseEntity<RestResponse> updateUserFCMTokenUser(UserDetailsRequest createUserDetails);
 
+	ResponseEntity<RestResponse> updateUserSubscription(UserDetailsRequest createUserDetails);
+
 }

@@ -57,7 +57,8 @@ public class MessageServiceImpl implements MessageService{
 					String notificationHeader = senderInfo.getFirstName()+" has messaged you"; 
 					String deepLink = "1";
 
-					pushNotificationDAO.sendNotificationToUser(senderInfo.getFirstName(), senderId, receiverInfo.getFcmToken(), notificationHeader, text, deepLink);
+					if (receiverInfo.getFcmToken() != null)
+						pushNotificationDAO.sendNotificationToUser(senderInfo.getFirstName(), senderId, receiverInfo.getFcmToken(), notificationHeader, text, deepLink);
 
 					message.setMessageId(sequence.getNextSequenceOfField("messageId"));
 					mongoTemplate.save(message, "messages");
@@ -67,13 +68,13 @@ public class MessageServiceImpl implements MessageService{
 					return ResponseEntity.ok(response);
 				}
 				else {
-					RestResponse response = new RestResponse("FAILURE", "missed to add text/senderId/receiverId/timeStamp ", 404);
+					RestResponse response = new RestResponse("FAILURE", "provide text/senderid/receiverid/timestamp in body", 404);
 					
 					return ResponseEntity.status(404).body(response);
 				}
 			} else {
 				
-				RestResponse response = new RestResponse("FAILURE", "users not exist", 404);
+				RestResponse response = new RestResponse("FAILURE", "user not exist", 404);
 				
 				return ResponseEntity.status(404).body(response);
 			}
@@ -101,7 +102,7 @@ public class MessageServiceImpl implements MessageService{
 	}
 
 	@Override
-	public ResponseEntity<RestResponse> readMessagesOfUser(String senderId, String receiverId, int limit) {
+	public ResponseEntity<RestResponse> readMessagesOfUser(String senderId, String receiverId) {
 		
 		Users receiverInfo = mongoTemplate.findOne(Query.query(Criteria.where("_id").is(receiverId)), Users.class);
 		Users senderInfo = mongoTemplate.findOne(Query.query(Criteria.where("_id").is(senderId)), Users.class);
@@ -111,7 +112,7 @@ public class MessageServiceImpl implements MessageService{
 			query.addCriteria(Criteria.where("receiverId").in(receiverId, senderId));
 			query.addCriteria(Criteria.where("senderId").in(senderId, receiverId));
 			query.with(Sort.by(Sort.Direction.DESC, "messageId"));
-			query.limit(limit);
+
 			List<Messages> messageList = mongoTemplate.find(query, Messages.class);
 			
 			RestResponse response = new RestResponse("SUCCESS", messageList, 200);

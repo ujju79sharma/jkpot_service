@@ -12,6 +12,7 @@ public class UserDetailsRequest {
 	private String location;
 	private List<String> examPreferences;
 	private String fcmToken;
+	private String subscriptionId;
 
 	public String getUserId() {
 		return userId;
@@ -79,5 +80,13 @@ public class UserDetailsRequest {
 
 	public void setFcmToken(String fcmToken) {
 		this.fcmToken = fcmToken;
+	}
+
+	public String getSubscriptionId() {
+		return subscriptionId;
+	}
+
+	public void setSubscriptionId(String subscriptionId) {
+		this.subscriptionId = subscriptionId;
 	}
 }

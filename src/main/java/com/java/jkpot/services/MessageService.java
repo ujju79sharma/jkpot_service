@@ -9,7 +9,7 @@ public interface MessageService {
 	ResponseEntity<RestResponse> createAMessage(int messageId, String senderId, String receiverId, String text,
 			String timeStamp, String timeZone, long epochSeconds, String date);
 
-	ResponseEntity<RestResponse> readMessagesOfUser(String senderId, String receiverId, int limit);
+	ResponseEntity<RestResponse> readMessagesOfUser(String senderId, String receiverId);
 
 	ResponseEntity<RestResponse> showConversationScreenOfUser(String senderId);
 

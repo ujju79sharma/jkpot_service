@@ -45,4 +45,9 @@ public class UsersController {
 		return usersService.updateUserFCMTokenUser(createUserDetails);
 	}
 	
+	@PostMapping(value = "/update/subscription")
+	public ResponseEntity<RestResponse> updateUserSubscription(@RequestBody UserDetailsRequest createUserDetails) {
+
+		return usersService.updateUserSubscription(createUserDetails);
+	}
 }

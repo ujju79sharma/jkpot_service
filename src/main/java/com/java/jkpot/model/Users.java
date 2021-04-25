@@ -17,7 +17,7 @@ public class Users {
 	private String phone;
 	private String location;
 	private TreeSet<String> examPreferences;
-	private TreeSet<Integer> subscriptionIds;
+	private TreeSet<String> subscriptionIds;
 	private boolean isPrimeUser;
 	private String status;
 	private LocalDate createdOn;
@@ -90,11 +90,11 @@ public class Users {
 		this.status = status;
 	}
 
-	public TreeSet<Integer> getSubscriptionIds() {
+	public TreeSet<String> getSubscriptionIds() {
 		return subscriptionIds;
 	}
 
-	public void setSubscriptionIds(TreeSet<Integer> subscriptionIdsList) {
+	public void setSubscriptionIds(TreeSet<String> subscriptionIdsList) {
 		if (this.getSubscriptionIds() == null || this.getSubscriptionIds().size() == 0)
 			this.subscriptionIds = (subscriptionIdsList);
 		else

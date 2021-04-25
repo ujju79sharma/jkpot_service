@@ -208,6 +208,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 				List<StudentsRankingResponse> usersRankingInMocks = new ArrayList<>();
 				List<Integer> sectionalId = new ArrayList<>(usersMocks.values());
 				List<Integer> subSectionalId = new ArrayList<>(usersMocks.keySet());
+				Map<String, List<StudentsRankingResponse>> finalResponse = new HashMap<String, List<StudentsRankingResponse>>();
 
 				for (int i = 0; i < subSectionalId.size(); i++) {
 
@@ -228,7 +229,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 	
 						JsonArray jsonMocksArray = jsonObject.get("data").getAsJsonArray();
 						
-						for (JsonElement each : jsonMocksArray) {
+							for (JsonElement each : jsonMocksArray) {
 
 								StudentsRankingResponse sectionalMarks = new StudentsRankingResponse();
 
@@ -246,8 +247,9 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 
 							return ResponseEntity.status(e.getRawStatusCode()).body(response);
 						}
+					finalResponse.put(usersMocksList.get(0).getSubSectionName(), usersRankingInMocks);
 					}
-					RestResponse response = new RestResponse("SUCCESS", usersRankingInMocks, 200);
+					RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
 
 					return ResponseEntity.ok(response);
 				}else {

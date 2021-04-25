@@ -28,14 +28,13 @@ public class MessagesController {
 				messageDetailsRequest.getTimeZone(), messageDetailsRequest.getEpochSeconds(), messageDetailsRequest.getDate());
 	}
 	
-	@GetMapping(path = "read/userMessages/{senderId}/{receiverId}/{limit}")
+	@GetMapping(path = "read/userMessages/{senderId}/{receiverId}")
 	public ResponseEntity<RestResponse> findMessagesOfUsers(@PathVariable(value = "senderId") String senderId,
-			@PathVariable(value = "receiverId") String receiverId, 
-			@PathVariable(value = "limit") int limit) {
+			@PathVariable(value = "receiverId") String receiverId) {
 		
-		return messageService.readMessagesOfUser(senderId, receiverId, limit);
+		return messageService.readMessagesOfUser(senderId, receiverId);
 	}
-	
+
 	@GetMapping(path = "show/conversationscreen/{senderId}")
 	public ResponseEntity<RestResponse> showConversationScreenOfUser(@PathVariable(value = "senderId") String senderId) {
 		

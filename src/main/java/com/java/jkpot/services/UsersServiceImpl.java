@@ -182,4 +182,36 @@ public class UsersServiceImpl implements UsersService{
 			return ResponseEntity.status(401).body(restResponse);
 		}
 	}
+
+	@Override
+	public ResponseEntity<RestResponse> updateUserSubscription(UserDetailsRequest createUserDetails) {
+		
+		if (createUserDetails.getSubscriptionId() != null) {
+			
+			Users user = usersDAO.findUsersById(createUserDetails.getUserId());
+
+			if (user != null) {
+
+				TreeSet<String> preference = new TreeSet<String>(createUserDetails.getExamPreferences());
+
+				user.setSubscriptionIds(preference);
+				
+				mongoTemplate.save(user, "users");
+				
+				RestResponse restResponse = new RestResponse("SUCCESS", user, 200);
+
+				return ResponseEntity.status(200).body(restResponse);
+				
+			}else {
+				
+				RestResponse restResponse = new RestResponse("FAILURE", "No user found.", 404);
+
+				return ResponseEntity.status(404).body(restResponse);
+			}
+		}else {
+			RestResponse restResponse = new RestResponse("FAILURE", "provide request body", 401);
+
+			return ResponseEntity.status(401).body(restResponse);
+		}
+	}
 }
