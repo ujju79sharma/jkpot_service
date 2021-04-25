@@ -112,11 +112,13 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			sectionalMarks.setSectionalId(studentAnswersRequest.getSectionalId());
 			sectionalMarks.setSubSectionalId(studentAnswersRequest.getSubSectionId());
 			sectionalMarks.setTotalMarks(totalMarks);
+			sectionalMarks.setExamId(studentAnswersRequest.getExamId());
 			sectionalMarks.setStudentSectionalMarksId(sequence.getNextSequenceOfField("studentSectionalMarksId"));
 			sectionalMarks.setUserId(studentAnswersRequest.getUserId());
 			
 			ExamSyllabus sectionalObj = mongoTemplate.findOne(Query.query(Criteria.where("topicId").is(studentAnswersRequest.getSectionalId()))
-					.addCriteria(Criteria.where("subTopicId").is(studentAnswersRequest.getSubSectionId())), ExamSyllabus.class);
+					.addCriteria(Criteria.where("subTopicId").is(studentAnswersRequest.getSubSectionId()))
+					.addCriteria(Criteria.where("examId").is(studentAnswersRequest.getExamId())), ExamSyllabus.class);
 			
 			if (sectionalObj != null) {
 				sectionalMarks.setSectionalName(sectionalObj.getTopic());

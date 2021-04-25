@@ -14,6 +14,7 @@ public class StudentsSectionalMarks {
 	private String sectionalName;
 	private int subSectionalId;
 	private String subSectionName;
+	private int examId;
 	private String userId;
 	private String userName;
 	private double totalMarks;
@@ -46,6 +47,14 @@ public class StudentsSectionalMarks {
 
 	public void setSectionalName(String sectionalName) {
 		this.sectionalName = sectionalName;
+	}
+
+	public int getExamId() {
+		return examId;
+	}
+
+	public void setExamId(int examId) {
+		this.examId = examId;
 	}
 
 	public int getSubSectionalId() {
