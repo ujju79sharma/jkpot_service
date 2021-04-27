@@ -12,6 +12,7 @@ public class PurchasedMocks {
 	private int purchasedMockId;
 	private String userId;
 	private String subscriptionId;
+	private String description;
 	private LocalDate purchasedDate;
 	private int examId;
 
@@ -45,6 +46,14 @@ public class PurchasedMocks {
 
 	public void setPurchasedDate(LocalDate purchasedDate) {
 		this.purchasedDate = purchasedDate;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public int getExamId() {

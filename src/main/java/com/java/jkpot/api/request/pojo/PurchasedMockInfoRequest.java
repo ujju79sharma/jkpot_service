@@ -9,6 +9,7 @@ public class PurchasedMockInfoRequest {
 	private int purchasedMockId;
 	private String userId;
 	private int examId;
+	private String description;
 	private String subscriptionId;
 
 	public int getPurchasedMockId() {
@@ -41,6 +42,14 @@ public class PurchasedMockInfoRequest {
 
 	public void setSubscriptionId(String subscriptionId) {
 		this.subscriptionId = subscriptionId;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public ResponseEntity<RestResponse> addPurchasedMockOfUser(PurchasedMockInfoRequest purchasedMockInfoRequest) {

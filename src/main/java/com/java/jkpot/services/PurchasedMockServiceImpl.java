@@ -36,6 +36,7 @@ public class PurchasedMockServiceImpl implements PurchasedMockService {
 			purchasedMock.setExamId(purchasedMockInfoRequest.getExamId());
 			purchasedMock.setSubscriptionId(purchasedMockInfoRequest.getSubscriptionId());
 			purchasedMock.setExamId(purchasedMockInfoRequest.getExamId());
+			purchasedMock.setDescription(purchasedMockInfoRequest.getDescription());
 			purchasedMock.setPurchasedDate(LocalDate.now());
 			purchasedMock.setPurchasedMockId(sequence.getNextSequenceOfField("purchasedMockId"));
 			
