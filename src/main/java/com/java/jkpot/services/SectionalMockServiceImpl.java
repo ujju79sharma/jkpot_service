@@ -27,6 +27,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.java.jkpot.api.request.pojo.StudentAnswersRequest;
+import com.java.jkpot.api.request.pojo.UpdateSectionalMockRequest;
 import com.java.jkpot.api.response.pojo.RestResponse;
 import com.java.jkpot.api.response.pojo.StudentsRankingResponse;
 import com.java.jkpot.dao.CountersDAO;
@@ -62,6 +63,43 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			return ResponseEntity.ok(response);
 		}else {
 
+			RestResponse response = new RestResponse("FAILURE", "data not found", 404);
+
+			return ResponseEntity.status(404).body(response);
+		}
+	}
+	
+	@Override
+	public ResponseEntity<RestResponse> updateSectionalMockBySectionalIdAndSubSectionalId(UpdateSectionalMockRequest sectionalMockUpdateObj) {
+		
+		SectionalMocks sectionalMocks =  sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalIdAndSectionQuestionNo(
+				sectionalMockUpdateObj.getExamId(), sectionalMockUpdateObj.getSectionalId(), sectionalMockUpdateObj.getSubSectionalId(),
+				sectionalMockUpdateObj.getSectionQuestionNo());
+		
+		if (sectionalMocks != null) {
+			
+			if (sectionalMockUpdateObj.getAnswer() != null)
+				sectionalMocks.setAnswer(sectionalMockUpdateObj.getAnswer());
+			
+			if (sectionalMockUpdateObj.getImageName() != null) {
+				sectionalMocks.setImageAdded(true);
+				sectionalMocks.setImageName(sectionalMockUpdateObj.getImageName());
+			}
+			
+			if (sectionalMockUpdateObj.getOptions() != null && sectionalMockUpdateObj.getOptions().size() == 4)
+				sectionalMocks.setOptions(sectionalMockUpdateObj.getOptions());
+			
+			if (sectionalMockUpdateObj.getQuestion() != null)
+				sectionalMocks.setQuestion(sectionalMockUpdateObj.getAnswer());
+			
+			if (sectionalMockUpdateObj.getSectionName() != null)
+				sectionalMocks.setSectionName(sectionalMockUpdateObj.getSectionName());
+			
+			sectionalMockRepository.save(sectionalMocks);
+			
+			RestResponse response = new RestResponse("SUCCESS", sectionalMocks, 200);
+			return ResponseEntity.ok(response);
+		}else {
 			RestResponse response = new RestResponse("FAILURE", "data not found", 404);
 
 			return ResponseEntity.status(404).body(response);

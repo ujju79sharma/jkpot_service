@@ -10,4 +10,6 @@ public interface SectionalMockRepository extends MongoRepository<SectionalMocks,
 
 	List<SectionalMocks> findByExamIdAndSectionalIdAndSubSectionalId(int examId, int sectionalId, int subSectionalId);
 
+	SectionalMocks findByExamIdAndSectionalIdAndSubSectionalIdAndSectionQuestionNo(int examId, int sectionalId, int subSectionalId, int questionNo);
+
 }
