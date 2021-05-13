@@ -31,12 +31,13 @@ import com.java.jkpot.api.request.pojo.UpdateSectionalMockRequest;
 import com.java.jkpot.api.response.pojo.RestResponse;
 import com.java.jkpot.api.response.pojo.StudentsRankingResponse;
 import com.java.jkpot.dao.CountersDAO;
+import com.java.jkpot.dao.StudentsSectionalMarksDAO;
 import com.java.jkpot.model.ExamSyllabus;
 import com.java.jkpot.model.SectionalMocks;
 import com.java.jkpot.model.StudentsSectionalMarks;
 import com.java.jkpot.model.Users;
 import com.java.jkpot.repositories.SectionalMockRepository;
-import com.java.jkpot.repositories.StudentsSectionalMarksRepository;
+import com.mongodb.util.JSONParseException;
 
 @Service
 public class SectionalMockServiceImpl implements SectionalMockService {
@@ -44,11 +45,11 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 	@Autowired
 	private SectionalMockRepository sectionalMockRepository;
 	@Autowired
-	private StudentsSectionalMarksRepository studentsSectionalMarksRepository;
-	@Autowired
 	private MongoTemplate mongoTemplate;
 	@Autowired
 	private CountersDAO sequence;
+	@Autowired
+	private StudentsSectionalMarksDAO studentsSectionalMarksDAO;
 	
 	@Override
 	public ResponseEntity<RestResponse> findSectionalMockBySectionalIdAndSubSectionalId( int examId,
@@ -68,35 +69,53 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			return ResponseEntity.status(404).body(response);
 		}
 	}
-	
+
+	@Override
+	public ResponseEntity<RestResponse> findSectionalMockBySectionalId(int examId, int sectionalId) {
+
+		List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, 0);
+
+		if (sectionalMocks.size() > 0) {
+
+			RestResponse response = new RestResponse("SUCCESS", sectionalMocks.stream().peek(e->e.setAnswer(null)).collect(Collectors.toList()), 200);
+
+			return ResponseEntity.ok(response);
+		}else {
+
+			RestResponse response = new RestResponse("FAILURE", "data not found", 404);
+
+			return ResponseEntity.status(404).body(response);
+		}
+	}	
+
 	@Override
 	public ResponseEntity<RestResponse> updateSectionalMockBySectionalIdAndSubSectionalId(UpdateSectionalMockRequest sectionalMockUpdateObj) {
-		
+
 		SectionalMocks sectionalMocks =  sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalIdAndSectionQuestionNo(
 				sectionalMockUpdateObj.getExamId(), sectionalMockUpdateObj.getSectionalId(), sectionalMockUpdateObj.getSubSectionalId(),
 				sectionalMockUpdateObj.getSectionQuestionNo());
-		
+
 		if (sectionalMocks != null) {
-			
+
 			if (sectionalMockUpdateObj.getAnswer() != null)
 				sectionalMocks.setAnswer(sectionalMockUpdateObj.getAnswer());
-			
+
 			if (sectionalMockUpdateObj.getImageName() != null) {
 				sectionalMocks.setImageAdded(true);
 				sectionalMocks.setImageName(sectionalMockUpdateObj.getImageName());
 			}
-			
+
 			if (sectionalMockUpdateObj.getOptions() != null && sectionalMockUpdateObj.getOptions().size() == 4)
 				sectionalMocks.setOptions(sectionalMockUpdateObj.getOptions());
-			
+
 			if (sectionalMockUpdateObj.getQuestion() != null)
 				sectionalMocks.setQuestion(sectionalMockUpdateObj.getAnswer());
-			
+
 			if (sectionalMockUpdateObj.getSectionName() != null)
 				sectionalMocks.setSectionName(sectionalMockUpdateObj.getSectionName());
-			
+
 			sectionalMockRepository.save(sectionalMocks);
-			
+
 			RestResponse response = new RestResponse("SUCCESS", sectionalMocks, 200);
 			return ResponseEntity.ok(response);
 		}else {
@@ -153,11 +172,11 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			sectionalMarks.setExamId(studentAnswersRequest.getExamId());
 			sectionalMarks.setStudentSectionalMarksId(sequence.getNextSequenceOfField("studentSectionalMarksId"));
 			sectionalMarks.setUserId(studentAnswersRequest.getUserId());
-			
+
 			ExamSyllabus sectionalObj = mongoTemplate.findOne(Query.query(Criteria.where("topicId").is(studentAnswersRequest.getSectionalId()))
 					.addCriteria(Criteria.where("subTopicId").is(studentAnswersRequest.getSubSectionId()))
 					.addCriteria(Criteria.where("examId").is(studentAnswersRequest.getExamId())), ExamSyllabus.class);
-			
+
 			if (sectionalObj != null) {
 				sectionalMarks.setSectionalName(sectionalObj.getTopic());
 				sectionalMarks.setSubSectionName(sectionalObj.getSubTopic());
@@ -168,6 +187,12 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			if (user != null)
 				sectionalMarks.setUserName(user.getFirstName()+" "+ user.getLastName());
 
+			//remove older record
+			mongoTemplate.findAndRemove(Query.query(Criteria.where("userId").is(user.getUserId()))
+					.addCriteria(Criteria.where("subSectionalId").is(studentAnswersRequest.getSubSectionId()))
+					.addCriteria(Criteria.where("sectionalId").is(studentAnswersRequest.getSectionalId()))
+					.addCriteria(Criteria.where("examId").is(studentAnswersRequest.getExamId())), StudentsSectionalMarks.class);
+			
 			mongoTemplate.save(sectionalMarks, "students_sectional_marks");
 			
 			RestResponse response = new RestResponse("SUCCESS", sectionalMarks, 200);
@@ -180,16 +205,13 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 
 	@Override
 	public ResponseEntity<RestResponse> findHighestMarksOfStudents(int examId, int sectionalId, int subSectionalId, String userId) {
-		
+
 		if (sectionalId > 0 && subSectionalId > 0 || userId != null) {
 
-			List<StudentsSectionalMarks> students = studentsSectionalMarksRepository.findByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
+			List<StudentsSectionalMarks> students = studentsSectionalMarksDAO.findByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
 
-			students = students.stream().peek(e->e.setCorrectAnswers(0)).peek(e1 -> e1.setCorrectQuestions(null)).peek(e2->e2.setIncorrectQuestions(null)).peek(e3->e3.setSkippedQuestions(null))
-						.peek(e4->e4.setIncorrectAnswers(0)).peek(e5->e5.setSkippedQuestion(0)).collect(Collectors.toList());
-			
 			if (students.size() > 0) {
-				
+
 				students.sort(new StudentsSorting());
 	
 				HashMap<String, StudentsSectionalMarks> studentMarks = new HashMap<String, StudentsSectionalMarks>();
@@ -228,7 +250,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			}else {
 				RestResponse response = new RestResponse("SUCCESS", "No mock given by the user.", 204);
 				
-				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+				return ResponseEntity.status(HttpStatus.OK).body(response);
 			}
 		}else {
 			
@@ -243,8 +265,10 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 		
 		if (userId != null && userId.length() > 0) {
 		
-			List<StudentsSectionalMarks> usersMocksList = mongoTemplate.find(Query.query(Criteria.where("userId").is(userId)), StudentsSectionalMarks.class);
+			List<StudentsSectionalMarks> usersMocksList = studentsSectionalMarksDAO.findStudentsSectionalMocksByStudentId(userId);
+
 			HashMap<Integer, Integer> usersMocks = new HashMap<Integer, Integer>();
+
 			for (StudentsSectionalMarks each : usersMocksList) {
 				usersMocks.put(each.getSubSectionalId(), each.getSectionalId());
 			}
@@ -270,7 +294,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 						headers.add("content-type", "application/json"); // maintain graphql
 	
 						// query is a grapql query wrapped into a String
-						String query = "http://localhost:8080/sectionalMock/fetch/top/students/"+eachExamId+"/"+sectionalId.get(i)+"/"+subSectionalId.get(i)+"/"+userId;
+						String query = "http://ec2-13-126-165-227.ap-south-1.compute.amazonaws.com:8080/sectionalMock/fetch/top/students/"+eachExamId+"/"+sectionalId.get(i)+"/"+subSectionalId.get(i)+"/"+userId;
 
 						try {
 							ResponseEntity<String> response = restTemplate.getForEntity(query, String.class);
@@ -282,15 +306,19 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 
 							for (JsonElement each : jsonMocksArray) {
 
-								StudentsRankingResponse sectionalMarks = new StudentsRankingResponse();
-
-								sectionalMarks.setUserId(each.getAsJsonObject().get("userId").getAsString());
-								sectionalMarks.setTotalMarks(each.getAsJsonObject().get("totalMarks").getAsDouble());
-								sectionalMarks.setUserName(each.getAsJsonObject().get("userName").getAsString());
-								sectionalMarks.setSectionalName(each.getAsJsonObject().get("sectionalName").getAsString());
-								sectionalMarks.setSubSectionName(each.getAsJsonObject().get("subSectionName").getAsString());
-
-								usersRankingInMocks.add(sectionalMarks);
+								try {
+									StudentsRankingResponse sectionalMarks = new StudentsRankingResponse();
+	
+									sectionalMarks.setUserId(each.getAsJsonObject().get("userId").getAsString());
+									sectionalMarks.setTotalMarks(each.getAsJsonObject().get("totalMarks").getAsDouble());
+									sectionalMarks.setUserName(each.getAsJsonObject().get("userName").getAsString());
+									sectionalMarks.setSectionalName(each.getAsJsonObject().get("sectionalName").getAsString());
+									sectionalMarks.setSubSectionName(each.getAsJsonObject().get("subSectionName").getAsString());
+	
+									usersRankingInMocks.add(sectionalMarks);
+								}catch(JSONParseException e) {
+									continue;
+								}
 							}
 						}catch(HttpClientErrorException e) {
 	
