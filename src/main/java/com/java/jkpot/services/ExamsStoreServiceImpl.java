@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import com.java.jkpot.api.request.pojo.ExamsStoreDeailsRequest;
 import com.java.jkpot.api.response.pojo.RestResponse;
 import com.java.jkpot.dao.CountersDAO;
+import com.java.jkpot.dao.ExamsStoreDAO;
 import com.java.jkpot.model.ExamConductor;
 import com.java.jkpot.model.Exams;
 import com.java.jkpot.model.ExamsStore;
@@ -25,6 +26,8 @@ public class ExamsStoreServiceImpl implements ExamsStoreService{
 	private MongoTemplate mongoTemplate;
 	@Autowired
 	private CountersDAO sequence;
+	@Autowired
+	private ExamsStoreDAO examsStoreDAO;
 	
 	@Override
 	public ResponseEntity<RestResponse> createExamMocksInExamStore(ExamsStoreDeailsRequest examStoreDetailsRequest) {
@@ -132,9 +135,8 @@ public class ExamsStoreServiceImpl implements ExamsStoreService{
 	@Override
 	public ResponseEntity<RestResponse> findAllExamsMocksInExamStore() {
 		
-		List<ExamsStore> examStores = mongoTemplate.findAll(ExamsStore.class);
-		
-		
+		List<ExamsStore> examStores = examsStoreDAO.findAllExamsInTheStore();
+
 		RestResponse response = new RestResponse("SUCCESS", examStores, 200);
 		
 		return ResponseEntity.ok(response);
