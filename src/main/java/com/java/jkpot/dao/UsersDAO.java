@@ -7,4 +7,6 @@ public interface UsersDAO {
 	Users findUsersById(String userId);
 	
 	Users findUserByEmailAndPhone(String email, String phone);
+
+	Users getUsersFirstNameAndLastName(String userId);
 }

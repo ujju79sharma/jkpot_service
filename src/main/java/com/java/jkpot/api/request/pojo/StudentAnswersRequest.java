@@ -8,6 +8,7 @@ public class StudentAnswersRequest {
 	private int examId;
 	private int sectionalId;
 	private int subSectionId;
+	private int fullLengthMockId;
 	private List<String> answers;
 
 	public String getUserId() {
@@ -40,6 +41,14 @@ public class StudentAnswersRequest {
 
 	public void setSubSectionId(int subSectionId) {
 		this.subSectionId = subSectionId;
+	}
+
+	public int getFullLengthMockId() {
+		return fullLengthMockId;
+	}
+
+	public void setFullLengthMockId(int fullLengthMockId) {
+		this.fullLengthMockId = fullLengthMockId;
 	}
 
 	public List<String> getAnswers() {

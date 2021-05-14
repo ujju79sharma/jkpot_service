@@ -1,5 +1,6 @@
 package com.java.jkpot.model;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
@@ -24,6 +25,7 @@ public class StudentsSectionalMarks {
 	private List<Integer> correctQuestions;
 	private List<Integer> incorrectQuestions;
 	private List<Integer> skippedQuestions;
+	private LocalDate mockRecordedDate;
 
 	public int getStudentSectionalMarksId() {
 		return studentSectionalMarksId;
@@ -143,6 +145,14 @@ public class StudentsSectionalMarks {
 
 	public void setSkippedQuestions(List<Integer> skippedQuestions) {
 		this.skippedQuestions = skippedQuestions;
+	}
+
+	public LocalDate getMockRecordedDate() {
+		return mockRecordedDate;
+	}
+
+	public void setMockRecordedDate(LocalDate mockRecordedDate) {
+		this.mockRecordedDate = mockRecordedDate;
 	}
 
 	@Override

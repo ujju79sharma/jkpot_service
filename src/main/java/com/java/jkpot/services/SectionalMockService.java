@@ -10,8 +10,6 @@ public interface SectionalMockService {
 
 	ResponseEntity<RestResponse> findSectionalMockBySectionalIdAndSubSectionalId(int examId, int sectionalId, int subSectionalId);
 
-	ResponseEntity<RestResponse> findSectionalMockBySectionalId(int examId, int sectionalId);
-
 	ResponseEntity<RestResponse> updateSectionalMockBySectionalIdAndSubSectionalId(UpdateSectionalMockRequest sectionalMockUpdateObj);
 
 	ResponseEntity<RestResponse> findStudentMarks(StudentAnswersRequest studentAnswersRequest);

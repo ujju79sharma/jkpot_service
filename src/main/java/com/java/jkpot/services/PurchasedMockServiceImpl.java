@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 import com.java.jkpot.api.request.pojo.PurchasedMockInfoRequest;
 import com.java.jkpot.api.response.pojo.RestResponse;
 import com.java.jkpot.dao.CountersDAO;
+import com.java.jkpot.dao.ExamsDAO;
+import com.java.jkpot.dao.PurchasedMockDAO;
 import com.java.jkpot.model.PurchasedMocks;
 import com.java.jkpot.model.Users;
 
@@ -23,6 +25,10 @@ public class PurchasedMockServiceImpl implements PurchasedMockService {
 	private MongoTemplate mongoTemplate;
 	@Autowired
 	private CountersDAO sequence;
+	@Autowired
+	private PurchasedMockDAO purchasedMockDAO;
+	@Autowired
+	private ExamsDAO examsDAO;
 	
 	@Override
 	public ResponseEntity<RestResponse> addPurchasedMockOfUser(PurchasedMockInfoRequest purchasedMockInfoRequest) {
@@ -30,29 +36,37 @@ public class PurchasedMockServiceImpl implements PurchasedMockService {
 		if (purchasedMockInfoRequest.getUserId() != null && purchasedMockInfoRequest.getSubscriptionId() != null
 				&& purchasedMockInfoRequest.getExamId() > 0) {
 
-			PurchasedMocks purchasedMock = new PurchasedMocks();
-			
-			purchasedMock.setUserId(purchasedMockInfoRequest.getUserId());
-			purchasedMock.setExamId(purchasedMockInfoRequest.getExamId());
-			purchasedMock.setSubscriptionId(purchasedMockInfoRequest.getSubscriptionId());
-			purchasedMock.setExamId(purchasedMockInfoRequest.getExamId());
-			purchasedMock.setDescription(purchasedMockInfoRequest.getDescription());
-			purchasedMock.setPurchasedDate(LocalDate.now());
-			purchasedMock.setPurchasedMockId(sequence.getNextSequenceOfField("purchasedMockId"));
-			
-			Users user = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(purchasedMockInfoRequest.getUserId())), Users.class);
-			
-			TreeSet<String> subscriptionId = new TreeSet<String>();
-			subscriptionId.add(purchasedMockInfoRequest.getSubscriptionId());
-			
-			user.setSubscriptionIds(subscriptionId);
+			if(purchasedMockDAO.checkAlreadyPurchasedByUser(purchasedMockInfoRequest.getUserId(), purchasedMockInfoRequest.getExamId()) == null) {
 
-			mongoTemplate.save(user, "users");
-			mongoTemplate.save(purchasedMock, "purchased_mocks");
-			
-			RestResponse response = new RestResponse("SUCCESS", purchasedMock, 200);
-			
-			return ResponseEntity.ok(response);
+				String examName = examsDAO.getExamName(purchasedMockInfoRequest.getExamId());
+
+				PurchasedMocks purchasedMock = new PurchasedMocks();
+
+				purchasedMock.setUserId(purchasedMockInfoRequest.getUserId());
+				purchasedMock.setExamId(purchasedMockInfoRequest.getExamId());
+				purchasedMock.setSubscriptionId(purchasedMockInfoRequest.getSubscriptionId());
+				purchasedMock.setExamId(purchasedMockInfoRequest.getExamId());
+				purchasedMock.setExamName(examName);
+				purchasedMock.setDescription(purchasedMockInfoRequest.getDescription());
+				purchasedMock.setPurchasedDate(LocalDate.now());
+				purchasedMock.setPurchasedMockId(sequence.getNextSequenceOfField("purchasedMockId"));
+				purchasedMock.setStatus("Purchased");
+				
+				Users user = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(purchasedMockInfoRequest.getUserId())), Users.class);
+	
+				user.setSubscriptionIds(purchasedMockInfoRequest.getSubscriptionId());
+	
+				mongoTemplate.save(user, "users");
+				mongoTemplate.save(purchasedMock, "purchased_mocks");
+				
+				RestResponse response = new RestResponse("SUCCESS", purchasedMock, 200);
+				
+				return ResponseEntity.ok(response);
+			}else {
+				RestResponse response = new RestResponse("SUCCESS", "Already purchased the exam", 200);
+
+				return ResponseEntity.ok(response);
+			}
 		}else {
 			
 			RestResponse response = new RestResponse("FAILURE", "missing request body info", 401);
@@ -82,7 +96,7 @@ public class PurchasedMockServiceImpl implements PurchasedMockService {
 			TreeSet<String> userSubscriptionId = user.getSubscriptionIds();
 			userSubscriptionId.remove(purchasedMockInfoRequest.getSubscriptionId());
 			
-			user.setSubscriptionIds(userSubscriptionId);
+			user.addSubscriptionIds(userSubscriptionId);
 
 			mongoTemplate.save(user, "users");
 

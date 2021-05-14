@@ -36,6 +36,7 @@ public class ExamsStoreServiceImpl implements ExamsStoreService{
 			int examConductorId = examStoreDetailsRequest.getExamConductorId();
 			String examLogo = examStoreDetailsRequest.getExamLogo();
 			double price = examStoreDetailsRequest.getPrice();
+			String description = examStoreDetailsRequest.getDescription();
 			
 			if (examStoreId > 0) { //UPDATE
 
@@ -62,7 +63,10 @@ public class ExamsStoreServiceImpl implements ExamsStoreService{
 					foundExamStore.setExamLogo(examLogo);
 				
 				if (price > 0)
-					foundExamStore.setPrice(price);
+					foundExamStore.setPrice(price*100);
+				
+				if (description != null)
+					foundExamStore.setDescription(description);
 				
 				mongoTemplate.save(foundExamStore, "exams_store");
 				
@@ -92,19 +96,25 @@ public class ExamsStoreServiceImpl implements ExamsStoreService{
 					
 					examStore.setExamConductorName(name);
 				}
-				
+
 				if (price > 0)
-					examStore.setPrice(price);
-				
+					examStore.setPrice(price*100);
+
 				if (examLogo != null && examLogo.length() > 0)
 					examStore.setExamLogo(examLogo);
-				
+
+				if (description != null)
+					examStore.setDescription(description);
+
 				examStore.setSubscriptionId(new RandomString(16).nextString());
-				
+
 				examStore.setExamStoreId(sequence.getNextSequenceOfField("examStoreId"));
-				
+
+				mongoTemplate.save(examStore, "exams_store");
+
+				examStore.setSubscriptionId(null);
 				RestResponse response = new RestResponse("SUCCESS", examStore, 200);
-				
+
 				return ResponseEntity.ok(response);
 			}else {
 

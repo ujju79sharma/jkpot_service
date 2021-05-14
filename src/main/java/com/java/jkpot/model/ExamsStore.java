@@ -15,6 +15,7 @@ public class ExamsStore {
 	private String examLogo;
 	private double price;
 	private String subscriptionId;
+	private String description;
 
 	public int getExamStoreId() {
 		return examStoreId;
@@ -80,10 +81,19 @@ public class ExamsStore {
 		this.examLogo = examLogo;
 	}
 
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
+
 	@Override
 	public String toString() {
-		return "PurchaseExams [purchaseExamId=" + examStoreId + ", examId=" + examId + ", examName=" + examName
-				+ ", examConductorId=" + examConductorId + ", examConductorName=" + examConductorName + ", price="
-				+ price + ", subscriptionId=" + subscriptionId + "]";
+		return "ExamsStore [examStoreId=" + examStoreId + ", examId=" + examId + ", examName=" + examName
+				+ ", examConductorId=" + examConductorId + ", examConductorName=" + examConductorName + ", examLogo="
+				+ examLogo + ", price=" + price + ", subscriptionId=" + subscriptionId + ", description=" + description
+				+ "]";
 	}
 }

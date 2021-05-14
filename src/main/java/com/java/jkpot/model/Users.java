@@ -94,11 +94,12 @@ public class Users {
 		return subscriptionIds;
 	}
 
-	public void setSubscriptionIds(TreeSet<String> subscriptionIdsList) {
-		if (this.getSubscriptionIds() == null || this.getSubscriptionIds().size() == 0)
-			this.subscriptionIds = (subscriptionIdsList);
-		else
-			this.subscriptionIds.addAll(subscriptionIdsList);
+	public void setSubscriptionIds(String subscriptionIdsList) {
+		this.subscriptionIds.add(subscriptionIdsList);
+	}
+
+	public void addSubscriptionIds(TreeSet<String> subscriptionIdsList) {
+		this.subscriptionIds.addAll(subscriptionIdsList);
 	}
 
 	public boolean isPrimeUser() {

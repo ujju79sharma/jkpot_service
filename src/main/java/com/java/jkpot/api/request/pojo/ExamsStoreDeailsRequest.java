@@ -7,6 +7,7 @@ public class ExamsStoreDeailsRequest {
 	private int examConductorId;
 	private String examLogo;
 	private double price;
+	private String description;
 
 	public int getExamStoreId() {
 		return examStoreId;
@@ -46,5 +47,13 @@ public class ExamsStoreDeailsRequest {
 
 	public void setPrice(double price) {
 		this.price = price;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 }

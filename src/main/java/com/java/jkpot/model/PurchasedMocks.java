@@ -15,6 +15,8 @@ public class PurchasedMocks {
 	private String description;
 	private LocalDate purchasedDate;
 	private int examId;
+	private String examName;
+	private String status;
 
 	public String getUserId() {
 		return userId;
@@ -62,6 +64,22 @@ public class PurchasedMocks {
 
 	public void setExamId(int examId) {
 		this.examId = examId;
+	}
+
+	public String getExamName() {
+		return examName;
+	}
+
+	public void setExamName(String examName) {
+		this.examName = examName;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.java.jkpot.services;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -52,28 +54,9 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 	private StudentsSectionalMarksDAO studentsSectionalMarksDAO;
 	
 	@Override
-	public ResponseEntity<RestResponse> findSectionalMockBySectionalIdAndSubSectionalId( int examId,
-			int sectionalId, int subSectionalId) {
+	public ResponseEntity<RestResponse> findSectionalMockBySectionalIdAndSubSectionalId( int examId, int sectionalId, int subSectionalId) {
 
 		List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
-
-		if (sectionalMocks.size() > 0) {
-
-			RestResponse response = new RestResponse("SUCCESS", sectionalMocks.stream().peek(e->e.setAnswer(null)).collect(Collectors.toList()), 200);
-
-			return ResponseEntity.ok(response);
-		}else {
-
-			RestResponse response = new RestResponse("FAILURE", "data not found", 404);
-
-			return ResponseEntity.status(404).body(response);
-		}
-	}
-
-	@Override
-	public ResponseEntity<RestResponse> findSectionalMockBySectionalId(int examId, int sectionalId) {
-
-		List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, 0);
 
 		if (sectionalMocks.size() > 0) {
 
@@ -130,7 +113,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 
 		List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalId(studentAnswersRequest.getExamId(), 
 				studentAnswersRequest.getSectionalId(),studentAnswersRequest.getSubSectionId());
-		
+
 		if (sectionalMocks.size() > 0 && studentAnswersRequest.getUserId() != null && sectionalMocks.size() == studentAnswersRequest.getAnswers().size()) {
 
 			double correctAnswer = 0;
@@ -139,9 +122,9 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			List<Integer> correctAnswers = new LinkedList<Integer>();
 			List<Integer> incorrectAnswers = new LinkedList<Integer>();
 			List<Integer> skippedQuestions = new LinkedList<Integer>();
-			
+
 			for (int i = 0; i <sectionalMocks.size(); i++) {
-				
+
 				if (studentAnswersRequest.getAnswers().get(i) != null && studentAnswersRequest.getAnswers().get(i).length() > 0 && 
 				sectionalMocks.get(i).getAnswer().equalsIgnoreCase(studentAnswersRequest.getAnswers().get(i))) {
 					correctAnswer = correctAnswer+1;
@@ -157,9 +140,9 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			}
 
 			double totalMarks = correctAnswer-incorrectAnswer*0.25;
-			
+
 			StudentsSectionalMarks sectionalMarks = new StudentsSectionalMarks();
-			
+
 			sectionalMarks.setCorrectAnswers(correctAnswer);
 			sectionalMarks.setIncorrectAnswers(incorrectAnswer);
 			sectionalMarks.setCorrectQuestions(correctAnswers);
@@ -172,6 +155,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			sectionalMarks.setExamId(studentAnswersRequest.getExamId());
 			sectionalMarks.setStudentSectionalMarksId(sequence.getNextSequenceOfField("studentSectionalMarksId"));
 			sectionalMarks.setUserId(studentAnswersRequest.getUserId());
+			sectionalMarks.setMockRecordedDate(LocalDate.now());
 
 			ExamSyllabus sectionalObj = mongoTemplate.findOne(Query.query(Criteria.where("topicId").is(studentAnswersRequest.getSectionalId()))
 					.addCriteria(Criteria.where("subTopicId").is(studentAnswersRequest.getSubSectionId()))
@@ -181,20 +165,24 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 				sectionalMarks.setSectionalName(sectionalObj.getTopic());
 				sectionalMarks.setSubSectionName(sectionalObj.getSubTopic());
 			}
-			
+
 			Users user =  mongoTemplate.findOne(Query.query(Criteria.where("userId").is(studentAnswersRequest.getUserId())), Users.class);
-			
+
 			if (user != null)
 				sectionalMarks.setUserName(user.getFirstName()+" "+ user.getLastName());
+			else
+				sectionalMarks.setUserName("User_"+ String.format("%06d", new Random().nextInt()));
 
 			//remove older record
-			mongoTemplate.findAndRemove(Query.query(Criteria.where("userId").is(user.getUserId()))
-					.addCriteria(Criteria.where("subSectionalId").is(studentAnswersRequest.getSubSectionId()))
-					.addCriteria(Criteria.where("sectionalId").is(studentAnswersRequest.getSectionalId()))
-					.addCriteria(Criteria.where("examId").is(studentAnswersRequest.getExamId())), StudentsSectionalMarks.class);
-			
+			if (user != null)
+				mongoTemplate.remove(Query.query(Criteria.where("userId").is(user.getUserId()))
+						.addCriteria(Criteria.where("subSectionalId").is(studentAnswersRequest.getSubSectionId()))
+						.addCriteria(Criteria.where("sectionalId").is(studentAnswersRequest.getSectionalId()))
+						.addCriteria(Criteria.where("totalMarks").lte(totalMarks))
+						.addCriteria(Criteria.where("examId").is(studentAnswersRequest.getExamId())), StudentsSectionalMarks.class);
+
 			mongoTemplate.save(sectionalMarks, "students_sectional_marks");
-			
+
 			RestResponse response = new RestResponse("SUCCESS", sectionalMarks, 200);
 			return ResponseEntity.ok(response);
 		}else {
@@ -294,7 +282,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 						headers.add("content-type", "application/json"); // maintain graphql
 	
 						// query is a grapql query wrapped into a String
-						String query = "http://ec2-13-126-165-227.ap-south-1.compute.amazonaws.com:8080/sectionalMock/fetch/top/students/"+eachExamId+"/"+sectionalId.get(i)+"/"+subSectionalId.get(i)+"/"+userId;
+						String query = "http://localhost:8080/sectionalMock/fetch/top/students/"+eachExamId+"/"+sectionalId.get(i)+"/"+subSectionalId.get(i)+"/"+userId;
 
 						try {
 							ResponseEntity<String> response = restTemplate.getForEntity(query, String.class);
