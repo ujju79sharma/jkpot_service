@@ -194,7 +194,7 @@ public class UsersServiceImpl implements UsersService{
 
 				TreeSet<String> preference = new TreeSet<String>(createUserDetails.getExamPreferences());
 
-				user.setSubscriptionIds(preference);
+				user.addSubscriptionIds(preference);
 				
 				mongoTemplate.save(user, "users");
 				
