@@ -78,21 +78,17 @@ public class PurchasedMockServiceImpl implements PurchasedMockService {
 	@Override
 	public ResponseEntity<RestResponse> deletePurchasedMockOfUser(PurchasedMockInfoRequest purchasedMockInfoRequest) {
 		
-		if (purchasedMockInfoRequest.getPurchasedMockId() > 0 ||
-				(purchasedMockInfoRequest.getUserId() != null && purchasedMockInfoRequest.getSubscriptionId() != null)) {
-
-			PurchasedMocks purchasedMock = null;
+		if (purchasedMockInfoRequest.getUserId() != null  ||
+				(purchasedMockInfoRequest.getPurchasedMockId() > 0 && purchasedMockInfoRequest.getSubscriptionId() != null)) {
 			
 			if (purchasedMockInfoRequest.getPurchasedMockId() > 0)
-				purchasedMock = mongoTemplate.findOne(Query.query(Criteria.where("purchasedMockId").is(purchasedMockInfoRequest.getPurchasedMockId())), PurchasedMocks.class);
+				mongoTemplate.findAndRemove(Query.query(Criteria.where("purchasedMockId").is(purchasedMockInfoRequest.getPurchasedMockId())), PurchasedMocks.class);
 			else
-				purchasedMock = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(purchasedMockInfoRequest.getUserId()))
+				mongoTemplate.findAndRemove(Query.query(Criteria.where("userId").is(purchasedMockInfoRequest.getUserId()))
 						.addCriteria(Criteria.where("subscriptionId").is(purchasedMockInfoRequest.getSubscriptionId())), PurchasedMocks.class);
 			
-			mongoTemplate.remove(purchasedMock, "purchased_mocks");
-			
 			Users user = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(purchasedMockInfoRequest.getUserId())), Users.class);
-			
+
 			TreeSet<String> userSubscriptionId = user.getSubscriptionIds();
 			userSubscriptionId.remove(purchasedMockInfoRequest.getSubscriptionId());
 			
