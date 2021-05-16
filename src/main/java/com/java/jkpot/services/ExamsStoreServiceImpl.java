@@ -143,11 +143,11 @@ public class ExamsStoreServiceImpl implements ExamsStoreService{
 	}
 
 	@Override
-	public ResponseEntity<RestResponse> findExamMockInExamStore(int examStoreId) {
+	public ResponseEntity<RestResponse> findExamMockInExamStore(int examId) {
 		
-		if (examStoreId > 0) {
+		if (examId > 0) {
 			
-			ExamsStore examMock = mongoTemplate.findOne(Query.query(Criteria.where("examStoreId").is(examStoreId)),ExamsStore.class);
+			ExamsStore examMock = mongoTemplate.findOne(Query.query(Criteria.where("examId").is(examId)),ExamsStore.class);
 			
 			if (examMock != null) {
 				RestResponse response = new RestResponse("SUCCESS", examMock, 200);

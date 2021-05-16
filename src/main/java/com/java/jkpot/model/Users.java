@@ -16,8 +16,8 @@ public class Users {
 	private String email;
 	private String phone;
 	private String location;
-	private TreeSet<String> examPreferences;
-	private TreeSet<String> subscriptionIds;
+	private TreeSet<String> examPreferences = new TreeSet<String>();
+	private TreeSet<String> subscriptionIds = new TreeSet<String>();
 	private boolean isPrimeUser;
 	private String status;
 	private LocalDate createdOn;

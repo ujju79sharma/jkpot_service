@@ -1,7 +1,7 @@
 package com.java.jkpot.model;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.TreeMap;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -21,8 +21,9 @@ public class StudentsFullLengthMockMarks {
 	private double correctAnswers;
 	private int skippedQuestion;
 	private double incorrectAnswers;
-	private List<Integer> correctQuestions;
-	private List<Integer> incorrectQuestions;
+	private TreeMap<String, Integer> attemptedQuestions;
+	private TreeMap<String, Integer> correctQuestions;
+	private TreeMap<String, Integer> incorrectQuestions;
 	private LocalDate mockRecordedDate;
 
 	public int getStudentFullLengthMockMarksId() {
@@ -113,20 +114,28 @@ public class StudentsFullLengthMockMarks {
 		this.incorrectAnswers = incorrectAnswers;
 	}
 
-	public List<Integer> getCorrectQuestions() {
+	public TreeMap<String, Integer> getCorrectQuestions() {
 		return correctQuestions;
 	}
 
-	public void setCorrectQuestions(List<Integer> correctQuestions) {
+	public void setCorrectQuestions(TreeMap<String, Integer> correctQuestions) {
 		this.correctQuestions = correctQuestions;
 	}
 
-	public List<Integer> getIncorrectQuestions() {
+	public TreeMap<String, Integer> getIncorrectQuestions() {
 		return incorrectQuestions;
 	}
 
-	public void setIncorrectQuestions(List<Integer> incorrectQuestions) {
+	public void setIncorrectQuestions(TreeMap<String, Integer> incorrectQuestions) {
 		this.incorrectQuestions = incorrectQuestions;
+	}
+
+	public TreeMap<String, Integer> getAttemptedQuestions() {
+		return attemptedQuestions;
+	}
+
+	public void setAttemptedQuestions(TreeMap<String, Integer> attemptedQuestions) {
+		this.attemptedQuestions = attemptedQuestions;
 	}
 
 	public LocalDate getMockRecordedDate() {

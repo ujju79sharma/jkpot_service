@@ -25,21 +25,21 @@ public class ExamsController {
 	public ResponseEntity<RestResponse> createNewExam(@RequestBody ExamDetailsRequest examDetailsRequest) {
 		
 		return examService.createExam(examDetailsRequest.getExamConductorId(), examDetailsRequest.getExamId(), 
-				examDetailsRequest.getExamName(), examDetailsRequest.getExamLogo());
+				examDetailsRequest.getExamName(), examDetailsRequest.getExamLogo(), examDetailsRequest.getPrice());
 	}
-	
+
 	@GetMapping("/read/{examId}")
 	public ResponseEntity<RestResponse> findAnExam(@PathVariable(value = "examId") int examId) {
 		
 		return examService.findExamById(examId);
 	}
-	
+
 	@GetMapping("/findAllExams/{examConductorId}")
 	public ResponseEntity<RestResponse> findAllExam(@PathVariable(value = "examConductorId") int examConductorId) {
 
 		return examService.findAllExams(examConductorId);
 	}
-	
+
 	@DeleteMapping("/delete/{examId}")
 	public ResponseEntity<RestResponse> deleteAnExam(@PathVariable(value = "examId") int examId) {
 		

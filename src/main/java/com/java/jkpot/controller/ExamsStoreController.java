@@ -33,10 +33,10 @@ public class ExamsStoreController {
 		return examStoreService.findAllExamsMocksInExamStore();
 	}
 
-	@GetMapping(path = "/read/{examStoreId}")
-	public ResponseEntity<RestResponse> findExamsMockInExamStore(@PathVariable(value = "examStoreId") int examStoreId) {
+	@GetMapping(path = "/read/{examId}")
+	public ResponseEntity<RestResponse> findExamsMockInExamStore(@PathVariable(value = "examId") int examId) {
 
-		return examStoreService.findExamMockInExamStore(examStoreId);
+		return examStoreService.findExamMockInExamStore(examId);
 	}
 
 	@DeleteMapping(path = "/delete/{examStoreId}")

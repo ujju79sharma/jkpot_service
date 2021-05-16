@@ -11,6 +11,7 @@ public class Exams {
 	private int examConductorId;
 	private String examName;
 	private String examLogo;
+	private int price;
 
 	public int getExamId() {
 		return examId;
@@ -42,6 +43,14 @@ public class Exams {
 
 	public void setExamLogo(String examLogo) {
 		this.examLogo = examLogo;
+	}
+
+	public int getPrice() {
+		return price;
+	}
+
+	public void setPrice(int price) {
+		this.price = price;
 	}
 
 	@Override

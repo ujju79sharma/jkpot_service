@@ -38,4 +38,12 @@ public class FullLengthMockController {
 
 		return fullLengthMockService.uploadAndFindStudentMarks(studentAnswersRequest);
 	}
+	
+	@GetMapping(path = "/find/topstudents/{examId}/{mockId}/{userId}")
+	public ResponseEntity<RestResponse> findFullLengthMockTopStudentsExamIdAndMockId(@PathVariable(value = "examId") int examId,
+			@PathVariable(value = "mockId") int mockId, 
+			@PathVariable(value = "userId") String userId) {
+		
+		return fullLengthMockService.fetchTopStudentsInAMock(examId, mockId, userId);
+	}
 }

@@ -40,5 +40,4 @@ public class MessagesController {
 		
 		return messageService.showConversationScreenOfUser(senderId);
 	}
-	
 }

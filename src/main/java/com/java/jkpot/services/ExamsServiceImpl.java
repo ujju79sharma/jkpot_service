@@ -23,7 +23,7 @@ public class ExamsServiceImpl implements ExamsService {
 	private MongoTemplate mongoTemplate;
 	
 	@Override
-	public ResponseEntity<RestResponse> createExam(int examConductorId, int examId, String examName, String examLogo) {
+	public ResponseEntity<RestResponse> createExam(int examConductorId, int examId, String examName, String examLogo, int price) {
 
 		if (examId > 0) {
 			Exams foundExam = mongoTemplate.findOne(Query.query(Criteria.where("examId").is(examId)), Exams.class);
@@ -36,6 +36,8 @@ public class ExamsServiceImpl implements ExamsService {
 					foundExam.setExamLogo(examLogo);
 				if (examConductorId > 0)
 					foundExam.setExamConductorId(examConductorId);
+				if (price > 0)
+					foundExam.setPrice(price);
 
 				mongoTemplate.save(foundExam, "exams");
 				
@@ -57,9 +59,11 @@ public class ExamsServiceImpl implements ExamsService {
 				exam.setExamName(examName);
 			if (examConductorId > 0)
 				exam.setExamConductorId(examConductorId);
-			
+			if (price > 0)
+				exam.setPrice(price);
+
 			exam.setExamId(sequence.getNextSequenceOfField("examId"));
-			
+
 			mongoTemplate.save(exam, "exams");
 
 			RestResponse response = new RestResponse("SUCCESS", exam, 200);
@@ -101,9 +105,9 @@ public class ExamsServiceImpl implements ExamsService {
 			
 			return ResponseEntity.status(HttpStatus.OK).body(response);
 		}else {
-			RestResponse response = new RestResponse("NO DATA", "No exams added.", 200);
+			RestResponse response = new RestResponse("NO DATA", "No exams added.", 409);
 			
-			return ResponseEntity.status(HttpStatus.NOT_IMPLEMENTED).body(response);
+			return ResponseEntity.status(409).body(response);
 		}
 	}
 

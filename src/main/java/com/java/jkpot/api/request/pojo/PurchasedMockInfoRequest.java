@@ -1,9 +1,5 @@
 package com.java.jkpot.api.request.pojo;
 
-import org.springframework.http.ResponseEntity;
-
-import com.java.jkpot.api.response.pojo.RestResponse;
-
 public class PurchasedMockInfoRequest {
 
 	private int purchasedMockId;
@@ -11,6 +7,7 @@ public class PurchasedMockInfoRequest {
 	private int examId;
 	private String description;
 	private String subscriptionId;
+	private String paymentId;
 
 	public int getPurchasedMockId() {
 		return purchasedMockId;
@@ -52,8 +49,11 @@ public class PurchasedMockInfoRequest {
 		this.description = description;
 	}
 
-	public ResponseEntity<RestResponse> addPurchasedMockOfUser(PurchasedMockInfoRequest purchasedMockInfoRequest) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getPaymentId() {
+		return paymentId;
+	}
+
+	public void setPaymentId(String paymentId) {
+		this.paymentId = paymentId;
 	}
 }

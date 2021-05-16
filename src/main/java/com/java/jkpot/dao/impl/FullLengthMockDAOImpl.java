@@ -22,7 +22,7 @@ public class FullLengthMockDAOImpl implements FullLengthMockDAO{
 		
 		Query query = new Query();
 		query.addCriteria(Criteria.where("examId").is(examId)).addCriteria(Criteria.where("mockId").is(mockId));
-		query.fields().exclude("answer");
+//		query.fields().exclude("answer");
 		return mongoTemplate.find(query, FullLengthMocks.class);
 	}
 }
