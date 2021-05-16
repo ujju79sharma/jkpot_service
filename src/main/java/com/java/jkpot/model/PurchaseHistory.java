@@ -1,5 +1,7 @@
 package com.java.jkpot.model;
 
+import java.time.LocalDate;
+
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -12,6 +14,7 @@ public class PurchaseHistory {
 	private String paymentId;
 	private String subscriptionId;
 	private int examId;
+	private LocalDate purchasedDate;
 	private String status;
 
 	public int getPurchaseHistoryId() {
@@ -52,6 +55,14 @@ public class PurchaseHistory {
 
 	public void setExamId(int examId) {
 		this.examId = examId;
+	}
+
+	public LocalDate getPurchasedDate() {
+		return purchasedDate;
+	}
+
+	public void setPurchasedDate(LocalDate purchasedDate) {
+		this.purchasedDate = purchasedDate;
 	}
 
 	public String getStatus() {

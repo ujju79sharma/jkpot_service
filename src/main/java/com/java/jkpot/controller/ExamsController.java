@@ -23,7 +23,7 @@ public class ExamsController {
 	
 	@PostMapping("/create")
 	public ResponseEntity<RestResponse> createNewExam(@RequestBody ExamDetailsRequest examDetailsRequest) {
-		
+
 		return examService.createExam(examDetailsRequest.getExamConductorId(), examDetailsRequest.getExamId(), 
 				examDetailsRequest.getExamName(), examDetailsRequest.getExamLogo(), examDetailsRequest.getPrice());
 	}
@@ -42,7 +42,7 @@ public class ExamsController {
 
 	@DeleteMapping("/delete/{examId}")
 	public ResponseEntity<RestResponse> deleteAnExam(@PathVariable(value = "examId") int examId) {
-		
+
 		return examService.deleteExamData(examId);
 	}
 }

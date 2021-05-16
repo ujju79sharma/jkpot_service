@@ -11,4 +11,6 @@ public interface PurchasedMockService {
 
 	ResponseEntity<RestResponse> deletePurchasedMockOfUser(PurchasedMockInfoRequest purchasedMockInfoRequest);
 
+	ResponseEntity<RestResponse> fetchPurchasedMockOfUser(String userId);
+
 }

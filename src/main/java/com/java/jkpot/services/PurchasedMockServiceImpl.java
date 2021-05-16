@@ -1,6 +1,7 @@
 package com.java.jkpot.services;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class PurchasedMockServiceImpl implements PurchasedMockService {
 	@Autowired
 	private PurchasedMockDAO purchasedMockDAO;
 	@Autowired
-	private PurchaseHistoryDAO paymentHistoryDAO;
+	private PurchaseHistoryDAO purchaseHistoryDAO;
 	@Autowired
 	private ExamsDAO examsDAO;
 	@Autowired
@@ -46,7 +47,7 @@ public class PurchasedMockServiceImpl implements PurchasedMockService {
 				purchasedMockInfoRequest.getPaymentId().length() >= 4) {
 
 			if(purchasedMockDAO.checkAlreadyPurchasedByUser(purchasedMockInfoRequest.getUserId(), purchasedMockInfoRequest.getExamId()) == null
-					&& paymentHistoryDAO.checkAlreadyPurchasedByUser(purchasedMockInfoRequest.getUserId(), purchasedMockInfoRequest.getExamId()) == null) {
+					&& purchaseHistoryDAO.checkAlreadyPurchasedByUser(purchasedMockInfoRequest.getUserId(), purchasedMockInfoRequest.getExamId()) == null) {
 
 				String examName = examsDAO.getExamName(purchasedMockInfoRequest.getExamId());
 				
@@ -75,6 +76,7 @@ public class PurchasedMockServiceImpl implements PurchasedMockService {
 					purchaseHistory.setSubscriptionId(purchasedMockInfoRequest.getSubscriptionId());
 					purchaseHistory.setUserId(purchasedMockInfoRequest.getUserId());
 					purchaseHistory.setExamId(purchasedMockInfoRequest.getExamId());
+					purchaseHistory.setPurchasedDate(LocalDate.now());
 					purchaseHistory.setStatus("Purchased");
 	
 					mongoTemplate.save(user, "users");
@@ -143,6 +145,33 @@ public class PurchasedMockServiceImpl implements PurchasedMockService {
 			RestResponse response = new RestResponse("FAILURE", "missing request body info", 401);
 
 			return ResponseEntity.status(401).body(response);
+		}
+	}
+
+	@Override
+	public ResponseEntity<RestResponse> fetchPurchasedMockOfUser(String userId) {
+		
+		if (userId != null && userId.length() > 0) {
+			
+			List<PurchasedMocks> purchasedMocks = purchasedMockDAO.fetchPurchasedMocksOfUser(userId);
+			List<PurchaseHistory> purchaseHistory = purchaseHistoryDAO.fetchPurchaseHistoryOfUser(userId);
+
+			if (purchasedMocks.size() == purchaseHistory.size()) {
+				
+				RestResponse response = new RestResponse("SUCCESS", purchasedMocks, 200);
+
+				return ResponseEntity.ok(response);
+			}else {
+
+				RestResponse response = new RestResponse("FAILURE", "Something went wrong, please contact administrator", 409);
+
+				return ResponseEntity.status(409).body(response);
+			}
+		}else {
+
+			RestResponse response = new RestResponse("SUCCESS", "NO mocks purchased", 200);
+
+			return ResponseEntity.status(200).body(response);
 		}
 	}
 }

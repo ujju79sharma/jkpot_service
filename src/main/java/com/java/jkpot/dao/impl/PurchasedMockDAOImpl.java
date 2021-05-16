@@ -1,5 +1,7 @@
 package com.java.jkpot.dao.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -27,4 +29,14 @@ public class PurchasedMockDAOImpl implements PurchasedMockDAO {
 		return mongoTemplate.findOne(query, PurchasedMocks.class);
 	}
 
+	@Override
+	public List<PurchasedMocks> fetchPurchasedMocksOfUser(String userId) {
+
+		Query query = new Query();
+
+		query.addCriteria(Criteria.where("userId").is(userId)).addCriteria(Criteria.where("status").is("Purchased"));
+		query.fields().exclude("purchasedMockId");
+		query.fields().exclude("subscriptionId");
+		return mongoTemplate.find(query, PurchasedMocks.class);
+	}
 }
