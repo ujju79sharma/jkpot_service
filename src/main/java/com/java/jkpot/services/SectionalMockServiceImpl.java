@@ -35,7 +35,6 @@ import com.java.jkpot.model.SectionalMocks;
 import com.java.jkpot.model.StudentsSectionalMarks;
 import com.java.jkpot.model.Users;
 import com.java.jkpot.repositories.SectionalMockRepository;
-import com.mongodb.util.JSONParseException;
 
 @Service
 public class SectionalMockServiceImpl implements SectionalMockService {
@@ -228,7 +227,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 
 			List<Document> usersMocksList = studentsSectionalMarksDAO.findStudentsSectionalMocksByStudentId(userId);
 
-			if (usersMocksList.size() > 0) {
+			if (usersMocksList != null && usersMocksList.size() > 0) {
 
 				List<Integer> sectionalId = usersMocksList.stream().map(e->e.getInteger("sectionalId")).collect(Collectors.toList());
 				List<Integer> subSectionalId = usersMocksList.stream().map(e->e.getInteger("subSectionalId")).collect(Collectors.toList());
@@ -241,12 +240,12 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 					for (int i = 0; i < subSectionalId.size(); i++) {
 						
 						List<StudentsRankingResponse> usersRankingInMocks = new ArrayList<>();
-						
+
 						RestTemplate restTemplate = new RestTemplate();
-	
+
 						HttpHeaders headers = new HttpHeaders();
 //						headers.add("Authorization", "Bearer *************");
-						headers.add("content-type", "application/json"); // maintain graphql
+						headers.add("content-type", "application/json"); // maintain REST-API
 	
 						// query is a grapql query wrapped into a String
 						String query = "http://localhost:8080/sectionalMock/fetch/top/students/"+eachExamId+"/"+sectionalId.get(i)+"/"+subSectionalId.get(i)+"/"+userId;
@@ -270,7 +269,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 									sectionalMarks.setSubSectionName(each.getAsJsonObject().get("subSection").getAsString());
 	
 									usersRankingInMocks.add(sectionalMarks);
-								}catch(JSONParseException e) {
+								}catch(Exception e) {
 									continue;
 								}
 							}

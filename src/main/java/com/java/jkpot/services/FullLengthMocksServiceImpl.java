@@ -97,6 +97,7 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 			int attemptCount = 0;
 			int correctCount = 0;
 			int incorrectCount = 0;
+
 			for (int i = 0; i <fullLengthMocks.size(); i++) {
 				
 				if (studentAnswersRequest.getAnswers().get(i) != null && studentAnswersRequest.getAnswers().get(i).length() > 0 && 
