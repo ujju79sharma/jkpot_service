@@ -193,7 +193,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 
 			List<Document> stu = studentsSectionalMarksDAO.fetchHighestMarksOfStudents(examId, sectionalId, subSectionalId);
 
-			if (stu.size() == 10) {
+			if (stu != null && stu.size() == 10) {
 				if (stu.stream().map(e->e.get("_id")).collect(Collectors.toList()).contains(userId)) {
 
 					RestResponse response = new RestResponse("SUCCESS", stu, 200);
@@ -206,7 +206,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 					RestResponse response = new RestResponse("SUCCESS", stu, 200);
 					return ResponseEntity.status(200).body(response);
 				}
-			}else if(stu.size() > 0) {
+			}else if(stu != null && stu.size() > 0) {
 				RestResponse response = new RestResponse("SUCCESS", stu, 200);
 				return ResponseEntity.status(200).body(response);
 			}else {

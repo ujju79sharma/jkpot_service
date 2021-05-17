@@ -187,7 +187,7 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 			
 			List<Document> students = studentsFullLengthMarksDAO.findByExamIdAndMockId(examId, mockId);
 
-			if (students.size() > 0) {
+			if (students != null && students.size() > 0) {
 
 				if (students.size() == 10) {
 
