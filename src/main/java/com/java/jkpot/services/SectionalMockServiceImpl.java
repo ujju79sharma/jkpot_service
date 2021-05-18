@@ -217,12 +217,15 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 
 			List<Document> usersMocksList = studentsSectionalMarksDAO.findStudentsSectionalMocksByStudentId(userId);
 
+			HashMap<Integer, HashMap<String, Document>> objFinal = new HashMap<>();
+
 			if (usersMocksList != null && usersMocksList.size() > 0) {
 
 				HashMap<String, List<Document>> objs = new HashMap<String, List<Document>>();
 
-				for (String each : usersMocksList.stream().map(e->e.getString("_id")).collect(Collectors.toList())) {
-					objs.put(each, usersMocksList.stream().filter(e->e.getString("_id").equals(each)).collect(Collectors.toList()));
+				for (String each : usersMocksList.stream().map(e->e.getString("Section")).collect(Collectors.toList())) {
+
+					objs.put(each, usersMocksList.stream().filter(e->e.getString("Section").equals(each)).collect(Collectors.toList()));
 				}
 				
 				RestResponse response = new RestResponse("SUCCESS", objs, 200);
