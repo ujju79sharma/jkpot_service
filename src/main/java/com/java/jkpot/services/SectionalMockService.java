@@ -16,6 +16,6 @@ public interface SectionalMockService {
 
 	ResponseEntity<RestResponse> findHighestMarksOfStudents(int examId, int sectionalId, int subSectionalId, String userId);
 
-	ResponseEntity<RestResponse> findHighestMarksOfStudentsInAllMocks(String userId);
+	ResponseEntity<RestResponse> fetchAttemptedMocksOfUser(String userId);
 
 }

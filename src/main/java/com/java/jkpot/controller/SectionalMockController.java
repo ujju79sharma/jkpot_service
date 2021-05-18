@@ -52,9 +52,9 @@ public class SectionalMockController {
 		return sectionalMockService.findHighestMarksOfStudents(examId, sectionalId, subSectionalId, userId);
 	}
 	
-	@GetMapping(value = "/fetch/ranking/allmocks/{userId}")
+	@GetMapping(value = "/fetch/all/attempted/mocks/{userId}")
 	public ResponseEntity<RestResponse> findHighestMarksOfStudentsInAllMocks(@PathVariable(value = "userId") String userId) {
 
-		return sectionalMockService.findHighestMarksOfStudentsInAllMocks(userId);
+		return sectionalMockService.fetchAttemptedMocksOfUser(userId);
 	}
 }

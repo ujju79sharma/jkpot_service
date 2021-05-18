@@ -200,7 +200,8 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 						
 						Document userMarks = studentsFullLengthMarksDAO.findTopMarksOfStudent(examId, mockId, userId);
 
-						students.add(userMarks);
+						if (userMarks != null)
+							students.add(userMarks);
 
 						RestResponse response = new RestResponse("SUCCESS", students, 200);
 

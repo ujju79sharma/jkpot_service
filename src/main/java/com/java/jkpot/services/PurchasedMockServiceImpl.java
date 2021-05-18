@@ -67,7 +67,7 @@ public class PurchasedMockServiceImpl implements PurchasedMockService {
 					
 					Users user = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(purchasedMockInfoRequest.getUserId())), Users.class);
 		
-					user.setSubscriptionIds(purchasedMockInfoRequest.getSubscriptionId());
+					user.setSubscriptionIds(purchasedMock.getExamId());
 					
 					PurchaseHistory purchaseHistory = new PurchaseHistory();
 					
@@ -78,7 +78,7 @@ public class PurchasedMockServiceImpl implements PurchasedMockService {
 					purchaseHistory.setExamId(purchasedMockInfoRequest.getExamId());
 					purchaseHistory.setPurchasedDate(LocalDate.now());
 					purchaseHistory.setStatus("Purchased");
-	
+
 					mongoTemplate.save(user, "users");
 					mongoTemplate.save(purchasedMock, "purchased_mocks");
 					mongoTemplate.save(purchaseHistory, "purchase_history");
@@ -122,16 +122,18 @@ public class PurchasedMockServiceImpl implements PurchasedMockService {
 		if (purchasedMockInfoRequest.getUserId() != null  ||
 				(purchasedMockInfoRequest.getPurchasedMockId() > 0 && purchasedMockInfoRequest.getSubscriptionId() != null)) {
 
+			PurchasedMocks purchasedMock = null;
+			
 			if (purchasedMockInfoRequest.getPurchasedMockId() > 0)
-				mongoTemplate.findAndRemove(Query.query(Criteria.where("purchasedMockId").is(purchasedMockInfoRequest.getPurchasedMockId())), PurchasedMocks.class);
+				purchasedMock = mongoTemplate.findAndRemove(Query.query(Criteria.where("purchasedMockId").is(purchasedMockInfoRequest.getPurchasedMockId())), PurchasedMocks.class);
 			else
-				mongoTemplate.findAndRemove(Query.query(Criteria.where("userId").is(purchasedMockInfoRequest.getUserId()))
+				purchasedMock = mongoTemplate.findAndRemove(Query.query(Criteria.where("userId").is(purchasedMockInfoRequest.getUserId()))
 						.addCriteria(Criteria.where("subscriptionId").is(purchasedMockInfoRequest.getSubscriptionId())), PurchasedMocks.class);
 			
 			Users user = mongoTemplate.findOne(Query.query(Criteria.where("userId").is(purchasedMockInfoRequest.getUserId())), Users.class);
 
-			TreeSet<String> userSubscriptionId = user.getSubscriptionIds();
-			userSubscriptionId.remove(purchasedMockInfoRequest.getSubscriptionId());
+			TreeSet<Integer> userSubscriptionId = user.getSubscriptionIds();
+			userSubscriptionId.remove(purchasedMock.getExamId());
 
 			user.addSubscriptionIds(userSubscriptionId);
 

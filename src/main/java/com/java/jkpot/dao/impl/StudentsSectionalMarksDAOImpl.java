@@ -35,7 +35,7 @@ public class StudentsSectionalMarksDAOImpl implements StudentsSectionalMarksDAO 
         MongoCollection<Document> studentsSectionalMarksDoc = DBUtil.databaseInfo().getCollection("students_sectional_marks");
 
 		Bson match = match(eq("userId", userId));
-	    Bson group = group("$subSectionName", first("section","$sectionalName"),
+	    Bson group = group("$sectionalName", first("Sub-Section","$subSectionName"),
 	    		first("sectionalId", "$sectionalId"), first("subSectionalId", "$subSectionalId"), first("examId", "$examId"));
 	    Bson project = project(fields(include("userId"), include("userId"), include("sectionalName"), include("subSectionName"),
 	    		include("subSectionalId"), include("sectionalId"), include("examId")));

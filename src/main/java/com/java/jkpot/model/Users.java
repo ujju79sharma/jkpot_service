@@ -17,7 +17,7 @@ public class Users {
 	private String phone;
 	private String location;
 	private TreeSet<String> examPreferences = new TreeSet<String>();
-	private TreeSet<String> subscriptionIds = new TreeSet<String>();
+	private TreeSet<Integer> subscriptionIds = new TreeSet<>();
 	private boolean isPrimeUser;
 	private String status;
 	private LocalDate createdOn;
@@ -90,15 +90,15 @@ public class Users {
 		this.status = status;
 	}
 
-	public TreeSet<String> getSubscriptionIds() {
+	public TreeSet<Integer> getSubscriptionIds() {
 		return subscriptionIds;
 	}
 
-	public void setSubscriptionIds(String subscriptionIdsList) {
+	public void setSubscriptionIds(Integer subscriptionIdsList) {
 		this.subscriptionIds.add(subscriptionIdsList);
 	}
 
-	public void addSubscriptionIds(TreeSet<String> subscriptionIdsList) {
+	public void addSubscriptionIds(TreeSet<Integer> subscriptionIdsList) {
 		this.subscriptionIds.addAll(subscriptionIdsList);
 	}
 
