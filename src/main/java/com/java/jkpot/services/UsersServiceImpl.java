@@ -186,15 +186,13 @@ public class UsersServiceImpl implements UsersService{
 	@Override
 	public ResponseEntity<RestResponse> updateUserSubscription(UserDetailsRequest createUserDetails) {
 		
-		if (createUserDetails.getSubscriptionId() != null) {
+		if (createUserDetails.getSubscriptionId() > 0) {
 			
 			Users user = usersDAO.findUsersById(createUserDetails.getUserId());
 
 			if (user != null) {
 
-				TreeSet<String> preference = new TreeSet<String>(createUserDetails.getExamPreferences());
-
-				user.addSubscriptionIds(preference);
+				user.setSubscriptionIds(createUserDetails.getSubscriptionId());
 				
 				mongoTemplate.save(user, "users");
 				

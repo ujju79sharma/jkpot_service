@@ -12,7 +12,7 @@ public class UserDetailsRequest {
 	private String location;
 	private List<String> examPreferences;
 	private String fcmToken;
-	private String subscriptionId;
+	private int subscriptionId;
 
 	public String getUserId() {
 		return userId;
@@ -66,12 +66,8 @@ public class UserDetailsRequest {
 		return examPreferences;
 	}
 
-	public void setExamPreferences(List<String> examPreferencesList) {
-
-		if (this.getExamPreferences() == null || this.getExamPreferences().size() == 0)
-			this.examPreferences= (examPreferencesList);
-		else
-			this.examPreferences.addAll(examPreferencesList);
+	public void setSubscriptionId(int subscriptionId) {
+		this.subscriptionId = subscriptionId;
 	}
 
 	public String getFcmToken() {
@@ -82,11 +78,7 @@ public class UserDetailsRequest {
 		this.fcmToken = fcmToken;
 	}
 
-	public String getSubscriptionId() {
+	public int getSubscriptionId() {
 		return subscriptionId;
-	}
-
-	public void setSubscriptionId(String subscriptionId) {
-		this.subscriptionId = subscriptionId;
 	}
 }
