@@ -48,7 +48,9 @@ public class MessageServiceImpl implements MessageService{
 				message.setReceiverId(receiverId);
 				message.setReceiverName(receiverInfo.getFirstName()+" "+receiverInfo.getLastName());
 				message.setTimeZone(timeZone);
-				message.setTimeStamp(LocalTime.parse(timeStamp));
+				
+				if (timeStamp != null)
+					message.setTimeStamp(LocalTime.parse(timeStamp));
 				message.setEpochSeconds(epochSeconds);
 				message.setDate(date);
 				

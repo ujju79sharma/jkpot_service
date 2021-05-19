@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bson.Document;
@@ -19,8 +20,10 @@ import com.java.jkpot.api.request.pojo.StudentAnswersRequest;
 import com.java.jkpot.api.request.pojo.UpdateSectionalMockRequest;
 import com.java.jkpot.api.response.pojo.RestResponse;
 import com.java.jkpot.dao.CountersDAO;
+import com.java.jkpot.dao.ExamsDAO;
 import com.java.jkpot.dao.StudentsSectionalMarksDAO;
 import com.java.jkpot.model.ExamSyllabus;
+import com.java.jkpot.model.Exams;
 import com.java.jkpot.model.SectionalMocks;
 import com.java.jkpot.model.StudentsSectionalMarks;
 import com.java.jkpot.model.Users;
@@ -37,6 +40,8 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 	private CountersDAO sequence;
 	@Autowired
 	private StudentsSectionalMarksDAO studentsSectionalMarksDAO;
+	@Autowired
+	private ExamsDAO examsDAO;
 
 	@Override
 	public ResponseEntity<RestResponse> findSectionalMockBySectionalIdAndSubSectionalId( int examId, int sectionalId, int subSectionalId) {
@@ -216,19 +221,28 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 		if (userId != null && userId.length() > 0) {
 
 			List<Document> usersMocksList = studentsSectionalMarksDAO.findStudentsSectionalMocksByStudentId(userId);
+			Set<Integer> examIds = usersMocksList.stream().map(e->e.getInteger("examId")).collect(Collectors.toSet());
+			
+			List<Exams> exams = examsDAO.findAllExams(examIds);
 
-			HashMap<Integer, HashMap<String, Document>> objFinal = new HashMap<>();
+			HashMap<String, HashMap<String, List<Document>>> objFinal = new HashMap<>();
 
 			if (usersMocksList != null && usersMocksList.size() > 0) {
 
-				HashMap<String, List<Document>> objs = new HashMap<String, List<Document>>();
+				for(Exams eachExam : exams) {
 
-				for (String each : usersMocksList.stream().map(e->e.getString("Section")).collect(Collectors.toList())) {
+					HashMap<String, List<Document>> objs = new HashMap<String, List<Document>>();
 
-					objs.put(each, usersMocksList.stream().filter(e->e.getString("Section").equals(each)).collect(Collectors.toList()));
+					for (String each : usersMocksList.stream().filter(e1 -> e1.getInteger("examId") == eachExam.getExamId())
+							.map(e->e.getString("Section")).collect(Collectors.toList())) {
+
+						objs.put(each, usersMocksList.stream().filter(e->e.getString("Section").equals(each)
+								&& e.getInteger("examId") == eachExam.getExamId()).collect(Collectors.toList()));
+					}
+
+					objFinal.put(eachExam.getExamName(), objs);
 				}
-				
-				RestResponse response = new RestResponse("SUCCESS", objs, 200);
+				RestResponse response = new RestResponse("SUCCESS", objFinal, 200);
 
 				return ResponseEntity.ok(response);
 
