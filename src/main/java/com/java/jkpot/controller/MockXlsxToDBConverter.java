@@ -32,7 +32,7 @@ import com.poiji.bind.Poiji;
 
 @RestController
 @RequestMapping("/import")
-public class SectionalMockXlsxToDBConverter {
+public class MockXlsxToDBConverter {
 
 	@Autowired
 	private CountersDAO sequence;
@@ -130,6 +130,8 @@ public class SectionalMockXlsxToDBConverter {
 			
 			TreeMap<String, Integer> sectionNamesAndQuestions = new TreeMap<>();
 			
+			int mockId = sequence.getNextSequenceOfField("mockId");
+
 			for (FullLengthMocks each : mockQuestions) {
 
 				FullLengthMocks mock = new FullLengthMocks();
@@ -139,7 +141,7 @@ public class SectionalMockXlsxToDBConverter {
 				mock.setExamId(examId);
 				mock.setExamName(examName);
 				mock.setQuestionNo(each.getQuestionNo());
-				
+				mock.setMockId(mockId);
 				mock.setSectionName(each.getSectionName());
 
 				mock.setSectionQuestionNo(each.getSectionQuestionNo());
