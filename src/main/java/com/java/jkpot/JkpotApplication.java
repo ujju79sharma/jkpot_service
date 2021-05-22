@@ -17,7 +17,7 @@ public class JkpotApplication {
 	@Bean
 	public MongoClient getMongoConnectivity() {
 
-		String url1 = "mongodb+srv://jkpot:jkpot@jkpot.uem5j.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
+		String url1 = "mongodb+srv://jkpot:jkpot@cluster0.vkskw.mongodb.net/jkpot?retryWrites=true&w=majority";
 
 		MongoClient mongoClient = MongoClients.create(url1);
 
