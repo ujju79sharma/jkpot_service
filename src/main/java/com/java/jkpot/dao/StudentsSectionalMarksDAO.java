@@ -12,7 +12,7 @@ public interface StudentsSectionalMarksDAO {
 
 	List<StudentsSectionalMarks> findByExamIdAndSectionalIdAndSubSectionalId(int examId, int sectionalId, int subSectionalId);
 	
-	List<Document> fetchHighestMarksOfStudents (int examId, int sectionalId, int subSectionalId);
+	List<Document> fetchHighestMarksOfStudents (int examId, int sectionalId, int subSectionalId, boolean limitProvided);
 
 	Document fetchHighestMarksOfStudent(int examId, int sectionalId, int subSectionalId, String userId);
 }

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 import com.java.jkpot.api.request.pojo.StudentAnswersRequest;
 import com.java.jkpot.api.request.pojo.UpdateSectionalMockRequest;
 import com.java.jkpot.api.response.pojo.RestResponse;
+import com.java.jkpot.api.response.pojo.StudentSectionalAnswerResponse;
 import com.java.jkpot.dao.CountersDAO;
 import com.java.jkpot.dao.ExamsDAO;
 import com.java.jkpot.dao.StudentsSectionalMarksDAO;
@@ -171,9 +173,31 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 						.addCriteria(Criteria.where("totalMarks").lte(totalMarks))
 						.addCriteria(Criteria.where("examId").is(studentAnswersRequest.getExamId())), StudentsSectionalMarks.class);
 
+			
 			mongoTemplate.save(sectionalMarks, "students_sectional_marks");
 
-			RestResponse response = new RestResponse("SUCCESS", sectionalMarks, 200);
+			List<Document> studentList = studentsSectionalMarksDAO.fetchHighestMarksOfStudents(studentAnswersRequest.getExamId(), studentAnswersRequest.getSectionalId(),
+									studentAnswersRequest.getSubSectionId(), true);
+
+			Map<String, Object> obj = new HashMap<String, Object>();
+			
+			obj.put("_id", sectionalMarks.getUserId());
+			obj.put("totalMarks", sectionalMarks.getTotalMarks());
+			obj.put("userName", sectionalMarks.getUserName());
+			obj.put("section", sectionalMarks.getSectionalName());
+			obj.put("subSection", sectionalMarks.getSubSectionName());
+
+			int rank = studentList.indexOf(new Document(obj))+1;
+
+			StudentSectionalAnswerResponse finalResponse = new StudentSectionalAnswerResponse();
+
+			finalResponse.setStudentsSectionalMarks(sectionalMarks);
+			finalResponse.setRanking(rank);
+			finalResponse.setTotalStudents(studentList.size());
+			finalResponse.setTopStudents(this.findHighestMarksOfStudents(studentAnswersRequest.getExamId(), studentAnswersRequest.getSectionalId(),
+					studentAnswersRequest.getSubSectionId(), studentAnswersRequest.getUserId()).getData());
+
+			RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
 			return ResponseEntity.ok(response);
 		}else {
 			RestResponse response = new RestResponse("FAILURE", "Sectional Mock not exists", 404);
@@ -182,36 +206,36 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 	}
 
 	@Override
-	public ResponseEntity<RestResponse> findHighestMarksOfStudents(int examId, int sectionalId, int subSectionalId, String userId) {
+	public RestResponse findHighestMarksOfStudents(int examId, int sectionalId, int subSectionalId, String userId) {
 
 		if (sectionalId > 0 && subSectionalId > 0 || userId != null) {
 
-			List<Document> stu = studentsSectionalMarksDAO.fetchHighestMarksOfStudents(examId, sectionalId, subSectionalId);
+			List<Document> stu = studentsSectionalMarksDAO.fetchHighestMarksOfStudents(examId, sectionalId, subSectionalId, false);
 
 			if (stu != null && stu.size() == 10) {
 				if (stu.stream().map(e->e.get("_id")).collect(Collectors.toList()).contains(userId)) {
 
 					RestResponse response = new RestResponse("SUCCESS", stu, 200);
 
-					return ResponseEntity.status(200).body(response);
+					return response;
 				}else {
 					Document usersScore = studentsSectionalMarksDAO.fetchHighestMarksOfStudent(examId, sectionalId, subSectionalId, userId);
 					stu.add(usersScore);
 					
 					RestResponse response = new RestResponse("SUCCESS", stu, 200);
-					return ResponseEntity.status(200).body(response);
+					return response;
 				}
 			}else if(stu != null && stu.size() > 0) {
 				RestResponse response = new RestResponse("SUCCESS", stu, 200);
-				return ResponseEntity.status(200).body(response);
+				return response;
 			}else {
 				
 				RestResponse response = new RestResponse("SUCCESS", "Nobody given the test yet", 409);
-				return ResponseEntity.status(409).body(response);
+				return response;
 			}
 		}else {
 			RestResponse response = new RestResponse("FAILURE", "Missing fields", 403);
-			return ResponseEntity.status(403).body(response);
+			return response;
 		}
 	}
 	

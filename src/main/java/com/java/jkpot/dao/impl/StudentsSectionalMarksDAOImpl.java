@@ -68,7 +68,7 @@ public class StudentsSectionalMarksDAOImpl implements StudentsSectionalMarksDAO 
 	}
 
 	@Override
-	public List<Document> fetchHighestMarksOfStudents(int examId, int sectionalId, int subSectionalId) {
+	public List<Document> fetchHighestMarksOfStudents(int examId, int sectionalId, int subSectionalId, boolean limitProvided) {
 
         MongoCollection<Document> studentsSectionalMarksDoc = DBUtil.databaseInfo().getCollection("students_sectional_marks");
 
@@ -77,9 +77,15 @@ public class StudentsSectionalMarksDAOImpl implements StudentsSectionalMarksDAO 
 	    		first("subSection","$subSectionName"));
 	    Bson project = project(fields(include("userId"), include("userName"), include("totalMarks"), include("sectionalName"), include("subSectionName")));
 	    Bson sort = sort(descending("totalMarks"));
-	    Bson limit = limit(10);
 
-	    List<Document> results = studentsSectionalMarksDoc.aggregate(Arrays.asList(match, project, group, sort, limit)).into(new ArrayList<>());
+	    List<Document> results = null;
+	    
+	    if (limitProvided == false) {
+	    	Bson limit = limit(10);
+	    	results = studentsSectionalMarksDoc.aggregate(Arrays.asList(match, project, group, sort, limit)).into(new ArrayList<>());
+	    }
+	    else
+	    	results = studentsSectionalMarksDoc.aggregate(Arrays.asList(match, project, group, sort)).into(new ArrayList<>());
 	    return results;
 	}
 

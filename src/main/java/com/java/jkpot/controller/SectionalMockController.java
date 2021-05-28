@@ -44,7 +44,7 @@ public class SectionalMockController {
 	}
 
 	@GetMapping(value = "/fetch/top/students/{examId}/{sectionId}/{subSectionId}/{userId}")
-	public ResponseEntity<RestResponse> findHighestMarksOfStudents(@PathVariable(value = "examId") int examId,
+	public RestResponse findHighestMarksOfStudents(@PathVariable(value = "examId") int examId,
 			@PathVariable(value = "sectionId") int sectionalId, 
 			@PathVariable(value = "subSectionId") int subSectionalId, 
 			@PathVariable(value = "userId") String userId) {
