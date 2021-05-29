@@ -224,4 +224,13 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 		}
 	}
+
+	public ResponseEntity<RestResponse> fetchTopStudentsInAllMocks() {
+		
+		List<Document> finalResponse = fullLengthMockDAO.findTopStudentsInMock();
+
+		RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
+
+		return ResponseEntity.ok(response);
+	}
 }

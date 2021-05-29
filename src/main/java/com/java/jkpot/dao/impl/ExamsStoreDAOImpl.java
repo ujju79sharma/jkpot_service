@@ -23,5 +23,4 @@ public class ExamsStoreDAOImpl implements ExamsStoreDAO {
 		query.fields().exclude("subscriptionId");
 		return mongoTemplate.find(query, ExamsStore.class);
 	}
-
 }

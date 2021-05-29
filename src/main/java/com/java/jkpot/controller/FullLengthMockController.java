@@ -46,4 +46,10 @@ public class FullLengthMockController {
 		
 		return fullLengthMockService.fetchTopStudentsInAMock(examId, mockId, userId);
 	}
+	
+	@GetMapping(path = "/find/toppers")
+	public ResponseEntity<RestResponse> findOverallToppers() {
+		
+		return fullLengthMockService.fetchTopStudentsInAllMocks();
+	}
 }
