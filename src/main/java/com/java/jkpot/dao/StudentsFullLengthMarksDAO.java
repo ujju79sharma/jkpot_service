@@ -10,4 +10,6 @@ public interface StudentsFullLengthMarksDAO {
 
 	Document findTopMarksOfStudent(int examId, int mockId, String userId);
 
+	List<Document> fetchHighestMarksOfStudents(int examId, int fullLengthMockId);
+
 }

@@ -13,7 +13,7 @@ public interface FullLengthMocksService {
 
 	ResponseEntity<RestResponse> uploadAndFindStudentMarks(StudentAnswersRequest studentAnswersRequest);
 
-	ResponseEntity<RestResponse> fetchTopStudentsInAMock(int examId, int mockId, String userId);
+	RestResponse fetchTopStudentsInAMock(int examId, int mockId, String userId);
 
 	ResponseEntity<RestResponse> fetchTopStudentsInAllMocks();
 

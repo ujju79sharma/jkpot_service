@@ -59,4 +59,19 @@ public class StudentsFullLengthMarksDAOImpl implements StudentsFullLengthMarksDA
 	    List<Document> results = studentsSectionalMarksDoc.aggregate(Arrays.asList(match, project, group, sort, limit)).into(new ArrayList<>());
 	    return (results != null && results.size() > 0) ? results.get(0) : null;
 	}
+
+	@Override
+	public List<Document> fetchHighestMarksOfStudents(int examId, int fullLengthMockId) {
+
+		MongoCollection<Document> studentsSectionalMarksDoc = DBUtil.databaseInfo().getCollection("students_full_length_mock_marks");
+
+		Bson match = match(and(eq("mockId", fullLengthMockId), eq("examId", examId)));
+	    Bson group = group("$userId", max("totalMarks", "$totalMarks"), first("userName", "$userName"), first("exam","$examName"),
+	    		first("mock","$mockName"));
+	    Bson project = project(fields(include("userId"), include("userName"), include("totalMarks"), include("mockName"), include("examName")));
+	    Bson sort = sort(descending("totalMarks"));
+
+	    List<Document> results = studentsSectionalMarksDoc.aggregate(Arrays.asList(match, project, group, sort)).into(new ArrayList<>());
+	    return (results != null && results.size() > 0) ? results : null;
+	}
 }

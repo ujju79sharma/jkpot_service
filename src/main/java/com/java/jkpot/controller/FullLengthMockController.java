@@ -40,7 +40,7 @@ public class FullLengthMockController {
 	}
 	
 	@GetMapping(path = "/find/topstudents/{examId}/{mockId}/{userId}")
-	public ResponseEntity<RestResponse> findFullLengthMockTopStudentsExamIdAndMockId(@PathVariable(value = "examId") int examId,
+	public RestResponse findFullLengthMockTopStudentsExamIdAndMockId(@PathVariable(value = "examId") int examId,
 			@PathVariable(value = "mockId") int mockId, 
 			@PathVariable(value = "userId") String userId) {
 		

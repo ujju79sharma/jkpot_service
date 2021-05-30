@@ -1,7 +1,9 @@
 package com.java.jkpot.services;
 
 import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
@@ -11,12 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.java.jkpot.api.request.pojo.StudentAnswersRequest;
 import com.java.jkpot.api.response.pojo.RestResponse;
+import com.java.jkpot.api.response.pojo.StudentFullMockAnswerResponse;
 import com.java.jkpot.dao.CountersDAO;
 import com.java.jkpot.dao.FullLengthMockDAO;
 import com.java.jkpot.dao.FullLengthSectionsDAO;
@@ -106,6 +108,7 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 					correctAnswer = correctAnswer+1;
 
 					if (!attemptedQuestions.keySet().contains(fullLengthMocks.get(i).getSectionName())) {
+
 						attemptCount = 0;
 						correctCount = 0;
 
@@ -170,9 +173,30 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 						.addCriteria(Criteria.where("examId").is(studentAnswersRequest.getExamId())), StudentsFullLengthMockMarks.class);
 
 			mockMarks.setStudentFullLengthMockMarksId(sequence.getNextSequenceOfField("studentFullLengthMockMarksId"));
-			mongoTemplate.save(mockMarks, "students_full_length_mock_marks");
 
-			RestResponse response = new RestResponse("SUCCESS", mockMarks, 200);
+			mongoTemplate.save(mockMarks, "students_full_length_mock_marks");
+			
+			List<Document> studentList = studentsFullLengthMarksDAO.fetchHighestMarksOfStudents(studentAnswersRequest.getExamId(), studentAnswersRequest.getFullLengthMockId());
+
+			Map<String, Object> obj = new HashMap<String, Object>();
+
+			obj.put("_id", mockMarks.getUserId());
+			obj.put("totalMarks", mockMarks.getTotalMarks());
+			obj.put("userName", mockMarks.getUserName());
+			obj.put("mock", mockMarks.getMockName());
+			obj.put("exam", mockMarks.getExamName());
+
+			int rank = studentList.indexOf(new Document(obj))+1;
+
+			StudentFullMockAnswerResponse finalResponse = new StudentFullMockAnswerResponse();
+
+			finalResponse.setStudentsFullLengthMockMarks(mockMarks);
+			finalResponse.setRanking(rank);
+			finalResponse.setTotalStudents(studentList.size());
+			finalResponse.setTopStudents(this.fetchTopStudentsInAMock(studentAnswersRequest.getExamId(), studentAnswersRequest.getFullLengthMockId(),
+				studentAnswersRequest.getUserId()).getData());
+
+			RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
 			return ResponseEntity.ok(response);
 		}else {
 			RestResponse response = new RestResponse("FAILURE", "Sectional Mock not exists", 404);
@@ -181,8 +205,8 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 	}
 	
 	@Override
-	public ResponseEntity<RestResponse> fetchTopStudentsInAMock(int examId, int mockId, String userId) {
-		
+	public RestResponse fetchTopStudentsInAMock(int examId, int mockId, String userId) {
+
 		if (examId > 0 && mockId > 0 && userId != null) {
 			
 			List<Document> students = studentsFullLengthMarksDAO.findByExamIdAndMockId(examId, mockId);
@@ -195,7 +219,7 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 
 						RestResponse response = new RestResponse("SUCCESS", students, 200);
 
-						return ResponseEntity.ok(response);
+						return response;
 					}else {
 						
 						Document userMarks = studentsFullLengthMarksDAO.findTopMarksOfStudent(examId, mockId, userId);
@@ -205,23 +229,23 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 
 						RestResponse response = new RestResponse("SUCCESS", students, 200);
 
-						return ResponseEntity.ok(response);
+						return response;
 					}
 				}else {
 					RestResponse response = new RestResponse("SUCCESS", students, 200);
 
-					return ResponseEntity.ok(response);
+					return response;
 				}
 			}else {
 				RestResponse response = new RestResponse("SUCCESS", "No mock given by the user.", 204);
 
-				return ResponseEntity.status(HttpStatus.OK).body(response);
+				return response;
 			}
 		}else {
 			
 			RestResponse response = new RestResponse("FAILURE", "please insert userId or sectionalId or subSectionalId", 400);
 			
-			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+			return response;
 		}
 	}
 
@@ -229,8 +253,14 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 		
 		List<Document> finalResponse = fullLengthMockDAO.findTopStudentsInMock();
 
-		RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
+		if (finalResponse.size() > 0) {
+			RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
+	
+			return ResponseEntity.ok(response);
+		}else {
+			RestResponse response = new RestResponse("SUCCESS", "No full-length-mock given by students.", 200);
 
-		return ResponseEntity.ok(response);
+			return ResponseEntity.ok(response);
+		}
 	}
 }
