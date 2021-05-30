@@ -103,4 +103,17 @@ public class StudentsSectionalMarksDAOImpl implements StudentsSectionalMarksDAO 
 	    List<Document> results = studentsSectionalMarksDoc.aggregate(Arrays.asList(match, project, group, sort, limit)).into(new ArrayList<>());
 	    return (results != null && results.size() > 0) ? results.get(0) : null;
 	}
+
+	@Override
+	public StudentsSectionalMarks checkIfStudentHasAlreadyGivenTheMock(int examId, int sectionalId, int subSectionId, String userId) {
+
+		Query query = new Query();
+		query.addCriteria(Criteria.where("examId").is(examId));
+		query.addCriteria(Criteria.where("sectionalId").is(sectionalId));
+		query.addCriteria(Criteria.where("subSectionalId").is(subSectionId));
+		query.addCriteria(Criteria.where("userId").is(userId));
+		query.addCriteria(Criteria.where("status").is("taken"));
+
+		return mongoTemplate.findOne(query, StudentsSectionalMarks.class);
+	}
 }

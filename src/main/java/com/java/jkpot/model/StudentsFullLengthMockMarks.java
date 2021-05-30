@@ -25,6 +25,7 @@ public class StudentsFullLengthMockMarks {
 	private TreeMap<String, Integer> correctQuestions;
 	private TreeMap<String, Integer> incorrectQuestions;
 	private LocalDate mockRecordedDate;
+	private String status;
 
 	public int getStudentFullLengthMockMarksId() {
 		return studentFullLengthMockMarksId;
@@ -144,6 +145,14 @@ public class StudentsFullLengthMockMarks {
 
 	public void setMockRecordedDate(LocalDate mockRecordedDate) {
 		this.mockRecordedDate = mockRecordedDate;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	@Override

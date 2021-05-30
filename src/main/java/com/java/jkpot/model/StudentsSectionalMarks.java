@@ -26,6 +26,7 @@ public class StudentsSectionalMarks {
 	private List<Integer> incorrectQuestions;
 	private List<Integer> skippedQuestions;
 	private LocalDate mockRecordedDate;
+	private String status;
 
 	public int getStudentSectionalMarksId() {
 		return studentSectionalMarksId;
@@ -153,6 +154,14 @@ public class StudentsSectionalMarks {
 
 	public void setMockRecordedDate(LocalDate mockRecordedDate) {
 		this.mockRecordedDate = mockRecordedDate;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
 	}
 
 	@Override

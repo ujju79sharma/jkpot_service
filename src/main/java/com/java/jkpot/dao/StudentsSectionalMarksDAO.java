@@ -15,4 +15,6 @@ public interface StudentsSectionalMarksDAO {
 	List<Document> fetchHighestMarksOfStudents (int examId, int sectionalId, int subSectionalId, boolean limitProvided);
 
 	Document fetchHighestMarksOfStudent(int examId, int sectionalId, int subSectionalId, String userId);
+
+	StudentsSectionalMarks checkIfStudentHasAlreadyGivenTheMock(int examId, int sectionalId, int subSectionId, String userId);
 }

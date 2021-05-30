@@ -19,14 +19,22 @@ import java.util.List;
 
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import com.java.jkpot.dao.StudentsFullLengthMarksDAO;
+import com.java.jkpot.model.StudentsFullLengthMockMarks;
 import com.java.jkpot.utils.DBUtil;
 import com.mongodb.client.MongoCollection;
 
 @Repository
 public class StudentsFullLengthMarksDAOImpl implements StudentsFullLengthMarksDAO {
+
+	@Autowired
+	private MongoTemplate mongoTemplate;
 
 	@Override
 	public List<Document> findByExamIdAndMockId(int examId, int mockId) {
@@ -69,9 +77,18 @@ public class StudentsFullLengthMarksDAOImpl implements StudentsFullLengthMarksDA
 	    Bson group = group("$userId", max("totalMarks", "$totalMarks"), first("userName", "$userName"), first("exam","$examName"),
 	    		first("mock","$mockName"));
 	    Bson project = project(fields(include("userId"), include("userName"), include("totalMarks"), include("mockName"), include("examName")));
-	    Bson sort = sort(descending("totalMarks"));
+	    Bson sort = sort(descending("totalMarks","userName"));
 
 	    List<Document> results = studentsSectionalMarksDoc.aggregate(Arrays.asList(match, project, group, sort)).into(new ArrayList<>());
 	    return (results != null && results.size() > 0) ? results : null;
+	}
+
+	@Override
+	public StudentsFullLengthMockMarks checkIfUserHasGivenTheMock(int examId, int fullLengthMockId, String userId) {
+		
+		Query query = new Query();
+		query.addCriteria(Criteria.where("userId").is(userId)).addCriteria(Criteria.where("mockId").is(fullLengthMockId)).addCriteria(Criteria.where("examId").is(examId))
+			.addCriteria(Criteria.where("status").is("taken"));
+		return mongoTemplate.findOne(query, StudentsFullLengthMockMarks.class);
 	}
 }

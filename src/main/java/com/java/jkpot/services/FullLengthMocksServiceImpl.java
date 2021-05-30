@@ -11,8 +11,6 @@ import java.util.stream.Collectors;
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -89,121 +87,159 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 
 		if (fullLengthMocks.size() > 0 && studentAnswersRequest.getUserId() != null && fullLengthMocks.size() == studentAnswersRequest.getAnswers().size()) {
 
-			double correctAnswer = 0;
-			double incorrectAnswer = 0;
-			int skippedQuestion = 0;
+			StudentsFullLengthMockMarks checkIfStudentHasGivenTheMock = studentsFullLengthMarksDAO.checkIfUserHasGivenTheMock(studentAnswersRequest.getExamId(), 
+					studentAnswersRequest.getFullLengthMockId(), studentAnswersRequest.getUserId());
 
-			TreeMap<String, Integer> attemptedQuestions = new TreeMap<>();
-			TreeMap<String, Integer> correctAnswers = new TreeMap<>();
-			TreeMap<String, Integer> incorrectAnswers = new TreeMap<>();
-			int attemptCount = 0;
-			int correctCount = 0;
-			int incorrectCount = 0;
-
-			for (int i = 0; i <fullLengthMocks.size(); i++) {
-				
-				if (studentAnswersRequest.getAnswers().get(i) != null && studentAnswersRequest.getAnswers().get(i).length() > 0 && 
-						fullLengthMocks.get(i).getAnswer().equalsIgnoreCase(studentAnswersRequest.getAnswers().get(i))) {
+			if (checkIfStudentHasGivenTheMock == null) {
+				double correctAnswer = 0;
+				double incorrectAnswer = 0;
+				int skippedQuestion = 0;
+	
+				TreeMap<String, Integer> attemptedQuestions = new TreeMap<>();
+				TreeMap<String, Integer> correctAnswers = new TreeMap<>();
+				TreeMap<String, Integer> incorrectAnswers = new TreeMap<>();
+				int attemptCount = 0;
+				int correctCount = 0;
+				int incorrectCount = 0;
+	
+				for (int i = 0; i <fullLengthMocks.size(); i++) {
 					
-					correctAnswer = correctAnswer+1;
-
-					if (!attemptedQuestions.keySet().contains(fullLengthMocks.get(i).getSectionName())) {
-
-						attemptCount = 0;
-						correctCount = 0;
-
-						correctAnswers.put(fullLengthMocks.get(i).getSectionName(), ++correctCount);
-						attemptedQuestions.put(fullLengthMocks.get(i).getSectionName(), ++attemptCount);
+					if (studentAnswersRequest.getAnswers().get(i) != null && studentAnswersRequest.getAnswers().get(i).length() > 0 && 
+							fullLengthMocks.get(i).getAnswer().equalsIgnoreCase(studentAnswersRequest.getAnswers().get(i))) {
+						
+						correctAnswer = correctAnswer+1;
+	
+						if (!attemptedQuestions.keySet().contains(fullLengthMocks.get(i).getSectionName())) {
+	
+							attemptCount = 0;
+							correctCount = 0;
+	
+							correctAnswers.put(fullLengthMocks.get(i).getSectionName(), ++correctCount);
+							attemptedQuestions.put(fullLengthMocks.get(i).getSectionName(), ++attemptCount);
+						}else {
+							correctAnswers.put(fullLengthMocks.get(i).getSectionName(), ++correctCount);
+							attemptedQuestions.put(fullLengthMocks.get(i).getSectionName(), ++attemptCount);
+						}
+	
+					}else if (studentAnswersRequest.getAnswers().get(i) != null && studentAnswersRequest.getAnswers().get(i).length() > 0 && 
+							!fullLengthMocks.get(i).getAnswer().equalsIgnoreCase(studentAnswersRequest.getAnswers().get(i))) {
+						
+						incorrectAnswer = incorrectAnswer+1;
+						incorrectAnswers.put(fullLengthMocks.get(i).getSectionName(), fullLengthMocks.get(i).getQuestionNo());
+						
+						if (!attemptedQuestions.keySet().contains(fullLengthMocks.get(i).getSectionName())) {
+							attemptCount = 0;
+							incorrectCount = 0;
+	
+							attemptedQuestions.put(fullLengthMocks.get(i).getSectionName(), ++attemptCount);
+							incorrectAnswers.put(fullLengthMocks.get(i).getSectionName(), ++incorrectCount);
+						}else {
+							attemptedQuestions.put(fullLengthMocks.get(i).getSectionName(), ++attemptCount);
+							incorrectAnswers.put(fullLengthMocks.get(i).getSectionName(), ++incorrectCount);
+						}
 					}else {
-						correctAnswers.put(fullLengthMocks.get(i).getSectionName(), ++correctCount);
-						attemptedQuestions.put(fullLengthMocks.get(i).getSectionName(), ++attemptCount);
+						skippedQuestion += 1;
 					}
-
-				}else if (studentAnswersRequest.getAnswers().get(i) != null && studentAnswersRequest.getAnswers().get(i).length() > 0 && 
-						!fullLengthMocks.get(i).getAnswer().equalsIgnoreCase(studentAnswersRequest.getAnswers().get(i))) {
-					
-					incorrectAnswer = incorrectAnswer+1;
-					incorrectAnswers.put(fullLengthMocks.get(i).getSectionName(), fullLengthMocks.get(i).getQuestionNo());
-					
-					if (!attemptedQuestions.keySet().contains(fullLengthMocks.get(i).getSectionName())) {
-						attemptCount = 0;
-						incorrectCount = 0;
-
-						attemptedQuestions.put(fullLengthMocks.get(i).getSectionName(), ++attemptCount);
-						incorrectAnswers.put(fullLengthMocks.get(i).getSectionName(), ++incorrectCount);
-					}else {
-						attemptedQuestions.put(fullLengthMocks.get(i).getSectionName(), ++attemptCount);
-						incorrectAnswers.put(fullLengthMocks.get(i).getSectionName(), ++incorrectCount);
-					}
-				}else {
-					skippedQuestion += 1;
 				}
+	
+				double totalMarks = correctAnswer-incorrectAnswer*0.25;
+	
+				StudentsFullLengthMockMarks mockMarks = new StudentsFullLengthMockMarks();
+	
+				mockMarks.setCorrectAnswers(correctAnswer);
+				mockMarks.setIncorrectAnswers(incorrectAnswer);
+				mockMarks.setCorrectQuestions(correctAnswers);
+				mockMarks.setIncorrectQuestions(incorrectAnswers);
+				mockMarks.setAttemptedQuestions(attemptedQuestions);
+				mockMarks.setSkippedQuestion(skippedQuestion);
+				mockMarks.setTotalMarks(totalMarks);
+				mockMarks.setExamId(studentAnswersRequest.getExamId());
+				mockMarks.setMockId(studentAnswersRequest.getFullLengthMockId());
+				mockMarks.setUserId(studentAnswersRequest.getUserId());
+				mockMarks.setMockRecordedDate(LocalDate.now());
+				mockMarks.setMockName(fullLengthMocks.get(0).getFullLengthMockName());
+				mockMarks.setExamName(fullLengthMocks.get(0).getExamName());
+	
+				Users user = usersDAO.getUsersFirstNameAndLastName(studentAnswersRequest.getUserId());
+	
+				if (user != null)
+					mockMarks.setUserName(user.getFirstName()+" "+ user.getLastName());
+				else // if no user found
+					mockMarks.setUserName("User_"+ String.format("%06d", new Random().nextInt()));
+
+				mockMarks.setStudentFullLengthMockMarksId(sequence.getNextSequenceOfField("studentFullLengthMockMarksId"));
+				mockMarks.setStatus("taken");
+
+				mongoTemplate.save(mockMarks, "students_full_length_mock_marks");
+
+				List<Document> studentList = studentsFullLengthMarksDAO.fetchHighestMarksOfStudents(studentAnswersRequest.getExamId(), studentAnswersRequest.getFullLengthMockId());
+
+				Map<String, Object> obj = new HashMap<String, Object>();
+
+				double marks = mockMarks.getTotalMarks();
+				String marksInString = String.valueOf(marks);
+
+				if (marksInString.contains(".0"))
+					obj.put("totalMarks", (int)marks);
+				else
+					obj.put("totalMarks", marks);
+
+				obj.put("_id", mockMarks.getUserId());
+				obj.put("userName", mockMarks.getUserName());
+				obj.put("mock", mockMarks.getMockName());
+				obj.put("exam", mockMarks.getExamName());
+	
+				int rank = studentList.indexOf(new Document(obj))+1;
+	
+				StudentFullMockAnswerResponse finalResponse = new StudentFullMockAnswerResponse();
+	
+				finalResponse.setStudentsFullLengthMockMarks(mockMarks);
+				finalResponse.setRanking(rank);
+				finalResponse.setTotalStudents(studentList.size());
+				finalResponse.setTopStudents(this.fetchTopStudentsInAMock(studentAnswersRequest.getExamId(), studentAnswersRequest.getFullLengthMockId(),
+					studentAnswersRequest.getUserId()).getData());
+	
+				RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
+				return ResponseEntity.ok(response);
+			}else {
+				
+				List<Document> studentList = studentsFullLengthMarksDAO.fetchHighestMarksOfStudents(studentAnswersRequest.getExamId(), studentAnswersRequest.getFullLengthMockId());
+
+				Map<String, Object> obj = new HashMap<String, Object>();
+
+				double marks = checkIfStudentHasGivenTheMock.getTotalMarks();
+				String marksInString = String.valueOf(marks);
+
+				if (marksInString.contains(".0"))
+					obj.put("totalMarks", (int)marks);
+				else
+					obj.put("totalMarks", marks);
+
+				obj.put("_id", checkIfStudentHasGivenTheMock.getUserId());
+				
+				obj.put("userName", checkIfStudentHasGivenTheMock.getUserName());
+				obj.put("mock", checkIfStudentHasGivenTheMock.getMockName());
+				obj.put("exam", checkIfStudentHasGivenTheMock.getExamName());
+
+				int rank = studentList.indexOf(new Document(obj))+1;
+
+				StudentFullMockAnswerResponse finalResponse = new StudentFullMockAnswerResponse();
+
+				finalResponse.setStudentsFullLengthMockMarks(checkIfStudentHasGivenTheMock);
+				finalResponse.setRanking(rank);
+				finalResponse.setTotalStudents(studentList.size());
+				finalResponse.setTopStudents(this.fetchTopStudentsInAMock(studentAnswersRequest.getExamId(), studentAnswersRequest.getFullLengthMockId(),
+					studentAnswersRequest.getUserId()).getData());
+
+				RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
+				return ResponseEntity.status(200).body(response);
 			}
-
-			double totalMarks = correctAnswer-incorrectAnswer*0.25;
-
-			StudentsFullLengthMockMarks mockMarks = new StudentsFullLengthMockMarks();
-
-			mockMarks.setCorrectAnswers(correctAnswer);
-			mockMarks.setIncorrectAnswers(incorrectAnswer);
-			mockMarks.setCorrectQuestions(correctAnswers);
-			mockMarks.setIncorrectQuestions(incorrectAnswers);
-			mockMarks.setAttemptedQuestions(attemptedQuestions);
-			mockMarks.setSkippedQuestion(skippedQuestion);
-			mockMarks.setTotalMarks(totalMarks);
-			mockMarks.setExamId(studentAnswersRequest.getExamId());
-			mockMarks.setMockId(studentAnswersRequest.getFullLengthMockId());
-			mockMarks.setUserId(studentAnswersRequest.getUserId());
-			mockMarks.setMockRecordedDate(LocalDate.now());
-			mockMarks.setMockName(fullLengthMocks.get(0).getFullLengthMockName());
-			mockMarks.setExamName(fullLengthMocks.get(0).getExamName());
-
-			Users user = usersDAO.getUsersFirstNameAndLastName(studentAnswersRequest.getUserId());
-
-			if (user != null)
-				mockMarks.setUserName(user.getFirstName()+" "+ user.getLastName());
-			else // if no user found
-				mockMarks.setUserName("User_"+ String.format("%06d", new Random().nextInt()));
-
-			//remove older record
-			if (user != null)
-				mongoTemplate.remove(Query.query(Criteria.where("userId").is(user.getUserId()))
-						.addCriteria(Criteria.where("mockId").is(studentAnswersRequest.getFullLengthMockId()))
-						.addCriteria(Criteria.where("totalMarks").lte(totalMarks))
-						.addCriteria(Criteria.where("examId").is(studentAnswersRequest.getExamId())), StudentsFullLengthMockMarks.class);
-
-			mockMarks.setStudentFullLengthMockMarksId(sequence.getNextSequenceOfField("studentFullLengthMockMarksId"));
-
-			mongoTemplate.save(mockMarks, "students_full_length_mock_marks");
-			
-			List<Document> studentList = studentsFullLengthMarksDAO.fetchHighestMarksOfStudents(studentAnswersRequest.getExamId(), studentAnswersRequest.getFullLengthMockId());
-
-			Map<String, Object> obj = new HashMap<String, Object>();
-
-			obj.put("_id", mockMarks.getUserId());
-			obj.put("totalMarks", mockMarks.getTotalMarks());
-			obj.put("userName", mockMarks.getUserName());
-			obj.put("mock", mockMarks.getMockName());
-			obj.put("exam", mockMarks.getExamName());
-
-			int rank = studentList.indexOf(new Document(obj))+1;
-
-			StudentFullMockAnswerResponse finalResponse = new StudentFullMockAnswerResponse();
-
-			finalResponse.setStudentsFullLengthMockMarks(mockMarks);
-			finalResponse.setRanking(rank);
-			finalResponse.setTotalStudents(studentList.size());
-			finalResponse.setTopStudents(this.fetchTopStudentsInAMock(studentAnswersRequest.getExamId(), studentAnswersRequest.getFullLengthMockId(),
-				studentAnswersRequest.getUserId()).getData());
-
-			RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
-			return ResponseEntity.ok(response);
 		}else {
 			RestResponse response = new RestResponse("FAILURE", "Sectional Mock not exists", 404);
 			return ResponseEntity.status(404).body(response);
 		}
 	}
-	
+
 	@Override
 	public RestResponse fetchTopStudentsInAMock(int examId, int mockId, String userId) {
 
