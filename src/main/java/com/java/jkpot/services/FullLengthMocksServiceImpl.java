@@ -65,9 +65,10 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 	public ResponseEntity<RestResponse> findFullLengthMockByExamIdAndMockId(int examId, int mockId, String userId) {
 
 		StudentsFullLengthMockMarks checkIfStudentHasGivenTheMock = studentsFullLengthMarksDAO.checkIfUserHasGivenTheMock(examId, mockId, userId);
-		List<FullLengthMocks> fullLengthMocks =  fullLengthMockDAO.findByExamIdAndFullLengthMockId(examId, mockId, false);
 
 		if (checkIfStudentHasGivenTheMock == null) {
+
+			List<FullLengthMocks> fullLengthMocks =  fullLengthMockDAO.findByExamIdAndFullLengthMockId(examId, mockId, false);
 	
 			if (fullLengthMocks.size() > 0) {
 	
@@ -83,6 +84,7 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 		}else {
 
 			List<Document> studentList = studentsFullLengthMarksDAO.fetchHighestMarksOfStudents(examId, mockId);
+			List<FullLengthMocks> fullLengthMocks =  fullLengthMockDAO.findByExamIdAndFullLengthMockId(examId, mockId, true);
 
 			Map<String, Object> obj = new HashMap<String, Object>();
 
