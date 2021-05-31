@@ -89,13 +89,9 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 			Map<String, Object> obj = new HashMap<String, Object>();
 
 			double marks = checkIfStudentHasGivenTheMock.getTotalMarks();
-			String marksInString = String.valueOf(marks);
+//			String marksInString = String.valueOf(marks);
 
-			if (marksInString.contains(".0"))
-				obj.put("totalMarks", (int)marks);
-			else
-				obj.put("totalMarks", marks);
-
+			obj.put("totalMarks", marks);
 			obj.put("_id", checkIfStudentHasGivenTheMock.getUserId());
 			
 			obj.put("userName", checkIfStudentHasGivenTheMock.getUserName());

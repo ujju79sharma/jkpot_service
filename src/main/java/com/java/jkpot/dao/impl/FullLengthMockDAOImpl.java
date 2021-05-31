@@ -30,7 +30,7 @@ public class FullLengthMockDAOImpl implements FullLengthMockDAO{
 		Query query = new Query();
 
 		query.addCriteria(Criteria.where("examId").is(examId)).addCriteria(Criteria.where("mockId").is(mockId));
-		
+
 		if (isAnswerRequired == false)
 			query.fields().exclude("answer");
 
