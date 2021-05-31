@@ -25,12 +25,15 @@ public class FullLengthMockDAOImpl implements FullLengthMockDAO{
 	private MongoTemplate mongoTemplate;
 	
 	@Override
-	public List<FullLengthMocks> findByExamIdAndFullLengthMockId(int examId, int mockId) {
+	public List<FullLengthMocks> findByExamIdAndFullLengthMockId(int examId, int mockId, boolean isAnswerRequired) {
 		
 		Query query = new Query();
 
 		query.addCriteria(Criteria.where("examId").is(examId)).addCriteria(Criteria.where("mockId").is(mockId));
-//		query.fields().exclude("answer");
+		
+		if (isAnswerRequired == false)
+			query.fields().exclude("answer");
+
 		return mongoTemplate.find(query, FullLengthMocks.class);
 	}
 
@@ -42,8 +45,8 @@ public class FullLengthMockDAOImpl implements FullLengthMockDAO{
 			        .andExpression("correctAnswers+incorrectAnswers+skippedQuestion").as("totalMarksFound"), 
 			        Aggregation.group("userId").sum("totalMarksFound").as("totalMarksFound").sum("totalMarks").as("totalMarksGot").first("userName").as("name"),
 			        Aggregation.sort(Direction.DESC, "totalMarksGot"),
-			        Aggregation.limit(10)
-			); 
+			        Aggregation.limit(10));
+
 		AggregationResults<Document> result = mongoTemplate.aggregate(agg, StudentsFullLengthMockMarks.class, Document.class);
 
 		return result.getMappedResults();

@@ -60,11 +60,11 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 			return ResponseEntity.status(404).body(response);
 		}
 	}
-	
+
 	@Override
 	public ResponseEntity<RestResponse> findSectionalMockByExamIdAndMockId(int examId, int mockId) {
 
-		List<FullLengthMocks> fullLengthMocks =  fullLengthMockDAO.findByExamIdAndFullLengthMockId(examId, mockId);
+		List<FullLengthMocks> fullLengthMocks =  fullLengthMockDAO.findByExamIdAndFullLengthMockId(examId, mockId, false);
 
 		if (fullLengthMocks.size() > 0) {
 
@@ -83,7 +83,7 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 	public ResponseEntity<RestResponse> uploadAndFindStudentMarks(StudentAnswersRequest studentAnswersRequest) {
 
 		List<FullLengthMocks> fullLengthMocks =  fullLengthMockDAO.findByExamIdAndFullLengthMockId(studentAnswersRequest.getExamId(), 
-				studentAnswersRequest.getFullLengthMockId());
+				studentAnswersRequest.getFullLengthMockId(), true);
 
 		if (fullLengthMocks.size() > 0 && studentAnswersRequest.getUserId() != null && fullLengthMocks.size() == studentAnswersRequest.getAnswers().size()) {
 
@@ -143,9 +143,9 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 				}
 	
 				double totalMarks = correctAnswer-incorrectAnswer*0.25;
-	
+
 				StudentsFullLengthMockMarks mockMarks = new StudentsFullLengthMockMarks();
-	
+
 				mockMarks.setCorrectAnswers(correctAnswer);
 				mockMarks.setIncorrectAnswers(incorrectAnswer);
 				mockMarks.setCorrectQuestions(correctAnswers);
@@ -159,9 +159,9 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 				mockMarks.setMockRecordedDate(LocalDate.now());
 				mockMarks.setMockName(fullLengthMocks.get(0).getFullLengthMockName());
 				mockMarks.setExamName(fullLengthMocks.get(0).getExamName());
-	
+
 				Users user = usersDAO.getUsersFirstNameAndLastName(studentAnswersRequest.getUserId());
-	
+
 				if (user != null)
 					mockMarks.setUserName(user.getFirstName()+" "+ user.getLastName());
 				else // if no user found
@@ -198,7 +198,7 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 				finalResponse.setTotalStudents(studentList.size());
 				finalResponse.setTopStudents(this.fetchTopStudentsInAMock(studentAnswersRequest.getExamId(), studentAnswersRequest.getFullLengthMockId(),
 					studentAnswersRequest.getUserId()).getData());
-	
+
 				RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
 				return ResponseEntity.ok(response);
 			}else {

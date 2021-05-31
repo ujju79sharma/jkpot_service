@@ -48,11 +48,11 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 	@Override
 	public ResponseEntity<RestResponse> findSectionalMockBySectionalIdAndSubSectionalId( int examId, int sectionalId, int subSectionalId) {
 
-		List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
+		List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findSectionalMockByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
 
 		if (sectionalMocks.size() > 0) {
 
-			RestResponse response = new RestResponse("SUCCESS", sectionalMocks.stream().peek(e->e.setAnswer(null)).collect(Collectors.toList()), 200);
+			RestResponse response = new RestResponse("SUCCESS", sectionalMocks, 200);
 
 			return ResponseEntity.ok(response);
 		}else {
