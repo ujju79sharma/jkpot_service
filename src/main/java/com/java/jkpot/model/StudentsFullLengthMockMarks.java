@@ -1,6 +1,7 @@
 package com.java.jkpot.model;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.TreeMap;
 
 import org.springframework.data.annotation.Id;
@@ -26,6 +27,7 @@ public class StudentsFullLengthMockMarks {
 	private TreeMap<String, Integer> incorrectQuestions;
 	private LocalDate mockRecordedDate;
 	private String status;
+	private List<String> studentAnswers;
 
 	public int getStudentFullLengthMockMarksId() {
 		return studentFullLengthMockMarksId;
@@ -153,6 +155,14 @@ public class StudentsFullLengthMockMarks {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public List<String> getStudentAnswers() {
+		return studentAnswers;
+	}
+
+	public void setStudentAnswers(List<String> studentAnswers) {
+		this.studentAnswers = studentAnswers;
 	}
 
 	@Override

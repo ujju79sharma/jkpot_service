@@ -27,6 +27,7 @@ public class StudentsSectionalMarks {
 	private List<Integer> skippedQuestions;
 	private LocalDate mockRecordedDate;
 	private String status;
+	private List<String> studentsAnswer;
 
 	public int getStudentSectionalMarksId() {
 		return studentSectionalMarksId;
@@ -162,6 +163,14 @@ public class StudentsSectionalMarks {
 
 	public void setStatus(String status) {
 		this.status = status;
+	}
+
+	public List<String> getStudentsAnswer() {
+		return studentsAnswer;
+	}
+
+	public void setStudentsAnswer(List<String> studentsAnswer) {
+		this.studentsAnswer = studentsAnswer;
 	}
 
 	@Override

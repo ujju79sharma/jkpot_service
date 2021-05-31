@@ -9,7 +9,7 @@ public interface FullLengthMocksService {
 
 	ResponseEntity<RestResponse> fetchSectionInfoByExamId(int examId);
 	
-	ResponseEntity<RestResponse> findSectionalMockByExamIdAndMockId(int examId, int mockId);
+	ResponseEntity<RestResponse> findFullLengthMockByExamIdAndMockId(int examId, int mockId, String userId);
 
 	ResponseEntity<RestResponse> uploadAndFindStudentMarks(StudentAnswersRequest studentAnswersRequest);
 

@@ -22,13 +22,14 @@ public class SectionalMockController {
 	@Autowired
 	private SectionalMockService sectionalMockService;
 
-	@GetMapping(value = "/find/{examId}/{sectionalId}/{subSectionalId}")
+	@GetMapping(value = "/find/{examId}/{sectionalId}/{subSectionalId}/{userId}")
 	public ResponseEntity<RestResponse> findSectionalMockBySectionalIdAndSubSectionalId(
 			@PathVariable(value = "examId") int examId,
 			@PathVariable(value = "sectionalId") int sectionalId, 
-			@PathVariable(value = "subSectionalId") int subSectionalId) {
+			@PathVariable(value = "subSectionalId") int subSectionalId,
+			@PathVariable(value = "userId") String userId) {
 
-		return sectionalMockService.findSectionalMockBySectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
+		return sectionalMockService.findSectionalMockBySectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId, userId);
 	}
 
 	@PutMapping(value = "/update/fields")

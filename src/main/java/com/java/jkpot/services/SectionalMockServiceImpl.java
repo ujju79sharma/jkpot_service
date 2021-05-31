@@ -46,20 +46,67 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 	private ExamsDAO examsDAO;
 
 	@Override
-	public ResponseEntity<RestResponse> findSectionalMockBySectionalIdAndSubSectionalId( int examId, int sectionalId, int subSectionalId) {
+	public ResponseEntity<RestResponse> findSectionalMockBySectionalIdAndSubSectionalId( int examId, int sectionalId, int subSectionalId, String userId) {
 
-		List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findSectionalMockByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
+		StudentsSectionalMarks sectionalMarks = studentsSectionalMarksDAO.checkIfStudentHasAlreadyGivenTheMock(examId, sectionalId, subSectionalId, userId);
 
-		if (sectionalMocks.size() > 0) {
+		if (sectionalMarks == null) {
+
+			List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findSectionalMockByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
+
+			if (sectionalMocks.size() > 0) {
+	
+				RestResponse response = new RestResponse("SUCCESS", sectionalMocks, 200);
+	
+				return ResponseEntity.ok(response);
+			}else {
+	
+				RestResponse response = new RestResponse("FAILURE", "data not found", 404);
+	
+				return ResponseEntity.status(404).body(response);
+			}
+		}else {
+			
+			List<SectionalMocks> sectionalMocks = sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
+
+			List<Document> studentList = studentsSectionalMarksDAO.fetchHighestMarksOfStudents(examId, sectionalId, subSectionalId, true);
+
+			Map<String, Object> obj = new HashMap<String, Object>();
+
+			double marks = sectionalMarks.getTotalMarks();
+			String marksInString = String.valueOf(marks);
+
+			if (marksInString.contains(".0"))
+				obj.put("totalMarks", (int)marks);
+			else
+				obj.put("totalMarks", marks);
+
+			obj.put("_id", sectionalMarks.getUserId());
+			obj.put("userName", sectionalMarks.getUserName());
+			obj.put("section", sectionalMarks.getSectionalName());
+			obj.put("subSection", sectionalMarks.getSubSectionName());
+
+			int rank = studentList.indexOf(new Document(obj))+1;
+
+			List<String> studentAnswers = sectionalMarks.getStudentsAnswer();
+			for (int i = 0; i <sectionalMocks.size(); i++) {
+
+				sectionalMocks.get(i).setStudentAnswer(studentAnswers.get(i));
+				if (i == 0) {
+
+					sectionalMocks.get(i).setRanking(rank);
+					sectionalMocks.get(i).setTotalStudents(studentList.size());
+					sectionalMocks.get(i).setTopStudents(this.findHighestMarksOfStudents(examId, sectionalId, subSectionalId, userId).getData());
+					sectionalMocks.get(i).setCorrectQuestions(sectionalMarks.getCorrectQuestions());
+					sectionalMocks.get(i).setIncorrectQuestions(sectionalMarks.getIncorrectQuestions());
+					sectionalMocks.get(i).setSkippedQuestions(sectionalMarks.getSkippedQuestions());
+				}else {
+					continue;
+				}
+			}
 
 			RestResponse response = new RestResponse("SUCCESS", sectionalMocks, 200);
-
-			return ResponseEntity.ok(response);
-		}else {
-
-			RestResponse response = new RestResponse("FAILURE", "data not found", 404);
-
-			return ResponseEntity.status(404).body(response);
+			return ResponseEntity.status(200).body(response);
 		}
 	}	
 
@@ -108,142 +155,105 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 
 		if (sectionalMocks.size() > 0 && studentAnswersRequest.getUserId() != null && sectionalMocks.size() == studentAnswersRequest.getAnswers().size()) {
 
-			StudentsSectionalMarks studentsSectionalMarks = studentsSectionalMarksDAO.checkIfStudentHasAlreadyGivenTheMock(studentAnswersRequest.getExamId(), 
-					studentAnswersRequest.getSectionalId(),studentAnswersRequest.getSubSectionId(), studentAnswersRequest.getUserId());
+			double correctAnswer = 0;
+			double incorrectAnswer = 0;
+			int skippedQuestion = 0;
+			List<Integer> correctAnswers = new LinkedList<Integer>();
+			List<Integer> incorrectAnswers = new LinkedList<Integer>();
+			List<Integer> skippedQuestions = new LinkedList<Integer>();
 
-			if(studentsSectionalMarks == null) {
+			for (int i = 0; i <sectionalMocks.size(); i++) {
 
-				double correctAnswer = 0;
-				double incorrectAnswer = 0;
-				int skippedQuestion = 0;
-				List<Integer> correctAnswers = new LinkedList<Integer>();
-				List<Integer> incorrectAnswers = new LinkedList<Integer>();
-				List<Integer> skippedQuestions = new LinkedList<Integer>();
-	
-				for (int i = 0; i <sectionalMocks.size(); i++) {
-	
-					if (studentAnswersRequest.getAnswers().get(i) != null && studentAnswersRequest.getAnswers().get(i).length() > 0 && 
-					sectionalMocks.get(i).getAnswer().equalsIgnoreCase(studentAnswersRequest.getAnswers().get(i))) {
-						correctAnswer = correctAnswer+1;
-						correctAnswers.add(sectionalMocks.get(i).getSectionQuestionNo());
-					}else if (studentAnswersRequest.getAnswers().get(i) != null && studentAnswersRequest.getAnswers().get(i).length() > 0 && 
-					!sectionalMocks.get(i).getAnswer().equalsIgnoreCase(studentAnswersRequest.getAnswers().get(i))) {
-						incorrectAnswer = incorrectAnswer+1;
-						incorrectAnswers.add(sectionalMocks.get(i).getSectionQuestionNo());
-					}else {
-						skippedQuestion += 1;
-						skippedQuestions.add(sectionalMocks.get(i).getSectionQuestionNo());
-					}
+				if (studentAnswersRequest.getAnswers().get(i) != null && studentAnswersRequest.getAnswers().get(i).length() > 0 && 
+				sectionalMocks.get(i).getAnswer().equalsIgnoreCase(studentAnswersRequest.getAnswers().get(i))) {
+					correctAnswer = correctAnswer+1;
+					correctAnswers.add(sectionalMocks.get(i).getSectionQuestionNo());
+				}else if (studentAnswersRequest.getAnswers().get(i) != null && studentAnswersRequest.getAnswers().get(i).length() > 0 && 
+				!sectionalMocks.get(i).getAnswer().equalsIgnoreCase(studentAnswersRequest.getAnswers().get(i))) {
+					incorrectAnswer = incorrectAnswer+1;
+					incorrectAnswers.add(sectionalMocks.get(i).getSectionQuestionNo());
+				}else {
+					skippedQuestion += 1;
+					skippedQuestions.add(sectionalMocks.get(i).getSectionQuestionNo());
 				}
-	
-				double totalMarks = correctAnswer-incorrectAnswer*0.25;
-	
-				StudentsSectionalMarks sectionalMarks = new StudentsSectionalMarks();
-	
-				sectionalMarks.setCorrectAnswers(correctAnswer);
-				sectionalMarks.setIncorrectAnswers(incorrectAnswer);
-				sectionalMarks.setCorrectQuestions(correctAnswers);
-				sectionalMarks.setIncorrectQuestions(incorrectAnswers);
-				sectionalMarks.setSkippedQuestion(skippedQuestion);
-				sectionalMarks.setSkippedQuestions(skippedQuestions);
-				sectionalMarks.setSectionalId(studentAnswersRequest.getSectionalId());
-				sectionalMarks.setSubSectionalId(studentAnswersRequest.getSubSectionId());
-				sectionalMarks.setTotalMarks(totalMarks);
-				sectionalMarks.setExamId(studentAnswersRequest.getExamId());
-				sectionalMarks.setStudentSectionalMarksId(sequence.getNextSequenceOfField("studentSectionalMarksId"));
-				sectionalMarks.setUserId(studentAnswersRequest.getUserId());
-				sectionalMarks.setMockRecordedDate(LocalDate.now());
-	
-				Users user =  mongoTemplate.findOne(Query.query(Criteria.where("userId").is(studentAnswersRequest.getUserId())), Users.class);
-	
-				if (user != null)
-					sectionalMarks.setUserName(user.getFirstName()+" "+ user.getLastName());
-				else
-					sectionalMarks.setUserName("User_"+ String.format("%06d", new Random().nextInt()));
+			}
 
-				ExamSyllabus sectionalObj = mongoTemplate.findOne(Query.query(Criteria.where("topicId").is(studentAnswersRequest.getSectionalId()))
-						.addCriteria(Criteria.where("subTopicId").is(studentAnswersRequest.getSubSectionId()))
-						.addCriteria(Criteria.where("examId").is(studentAnswersRequest.getExamId())), ExamSyllabus.class);
+			double totalMarks = correctAnswer-incorrectAnswer*0.25;
 
-				if (sectionalObj != null) {
-					sectionalMarks.setSectionalName(sectionalObj.getTopic());
-					sectionalMarks.setSubSectionName(sectionalObj.getSubTopic());
-				}
+			StudentsSectionalMarks sectionalMarks = new StudentsSectionalMarks();
 
-				//remove older record
+			sectionalMarks.setCorrectAnswers(correctAnswer);
+			sectionalMarks.setIncorrectAnswers(incorrectAnswer);
+			sectionalMarks.setCorrectQuestions(correctAnswers);
+			sectionalMarks.setIncorrectQuestions(incorrectAnswers);
+			sectionalMarks.setSkippedQuestion(skippedQuestion);
+			sectionalMarks.setSkippedQuestions(skippedQuestions);
+			sectionalMarks.setSectionalId(studentAnswersRequest.getSectionalId());
+			sectionalMarks.setSubSectionalId(studentAnswersRequest.getSubSectionId());
+			sectionalMarks.setTotalMarks(totalMarks);
+			sectionalMarks.setExamId(studentAnswersRequest.getExamId());
+			sectionalMarks.setStudentSectionalMarksId(sequence.getNextSequenceOfField("studentSectionalMarksId"));
+			sectionalMarks.setUserId(studentAnswersRequest.getUserId());
+			sectionalMarks.setMockRecordedDate(LocalDate.now());
+			sectionalMarks.setStudentsAnswer(studentAnswersRequest.getAnswers());
+
+			Users user =  mongoTemplate.findOne(Query.query(Criteria.where("userId").is(studentAnswersRequest.getUserId())), Users.class);
+
+			if (user != null)
+				sectionalMarks.setUserName(user.getFirstName()+" "+ user.getLastName());
+			else
+				sectionalMarks.setUserName("User_"+ String.format("%06d", new Random().nextInt()));
+
+			ExamSyllabus sectionalObj = mongoTemplate.findOne(Query.query(Criteria.where("topicId").is(studentAnswersRequest.getSectionalId()))
+					.addCriteria(Criteria.where("subTopicId").is(studentAnswersRequest.getSubSectionId()))
+					.addCriteria(Criteria.where("examId").is(studentAnswersRequest.getExamId())), ExamSyllabus.class);
+
+			if (sectionalObj != null) {
+				sectionalMarks.setSectionalName(sectionalObj.getTopic());
+				sectionalMarks.setSubSectionName(sectionalObj.getSubTopic());
+			}
+
+			//remove older record
 //				if (user != null)
 //					mongoTemplate.remove(Query.query(Criteria.where("userId").is(user.getUserId()))
 //							.addCriteria(Criteria.where("subSectionalId").is(studentAnswersRequest.getSubSectionId()))
 //							.addCriteria(Criteria.where("sectionalId").is(studentAnswersRequest.getSectionalId()))
 //							.addCriteria(Criteria.where("totalMarks").lte(totalMarks))
 //							.addCriteria(Criteria.where("examId").is(studentAnswersRequest.getExamId())), StudentsSectionalMarks.class);
-				sectionalMarks.setStatus("taken");
+			sectionalMarks.setStatus("taken");
 
-				mongoTemplate.save(sectionalMarks, "students_sectional_marks");
-	
-				List<Document> studentList = studentsSectionalMarksDAO.fetchHighestMarksOfStudents(studentAnswersRequest.getExamId(), studentAnswersRequest.getSectionalId(),
-										studentAnswersRequest.getSubSectionId(), true);
-	
-				Map<String, Object> obj = new HashMap<String, Object>();
+			mongoTemplate.save(sectionalMarks, "students_sectional_marks");
 
-				double marks = sectionalMarks.getTotalMarks();
-				String marksInString = String.valueOf(marks);
+			List<Document> studentList = studentsSectionalMarksDAO.fetchHighestMarksOfStudents(studentAnswersRequest.getExamId(), studentAnswersRequest.getSectionalId(),
+									studentAnswersRequest.getSubSectionId(), true);
 
-				if (marksInString.contains(".0"))
-					obj.put("totalMarks", (int)marks);
-				else
-					obj.put("totalMarks", marks);
-				
-				obj.put("_id", sectionalMarks.getUserId());
-				obj.put("userName", sectionalMarks.getUserName());
-				obj.put("section", sectionalMarks.getSectionalName());
-				obj.put("subSection", sectionalMarks.getSubSectionName());
+			Map<String, Object> obj = new HashMap<String, Object>();
 
-				int rank = studentList.indexOf(new Document(obj))+1;
+			double marks = sectionalMarks.getTotalMarks();
+			String marksInString = String.valueOf(marks);
 
-				StudentSectionalAnswerResponse finalResponse = new StudentSectionalAnswerResponse();
-	
-				finalResponse.setStudentsSectionalMarks(sectionalMarks);
-				finalResponse.setRanking(rank);
-				finalResponse.setTotalStudents(studentList.size());
-				finalResponse.setTopStudents(this.findHighestMarksOfStudents(studentAnswersRequest.getExamId(), studentAnswersRequest.getSectionalId(),
-						studentAnswersRequest.getSubSectionId(), studentAnswersRequest.getUserId()).getData());
+			if (marksInString.contains(".0"))
+				obj.put("totalMarks", (int)marks);
+			else
+				obj.put("totalMarks", marks);
+			
+			obj.put("_id", sectionalMarks.getUserId());
+			obj.put("userName", sectionalMarks.getUserName());
+			obj.put("section", sectionalMarks.getSectionalName());
+			obj.put("subSection", sectionalMarks.getSubSectionName());
 
-				RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
-				return ResponseEntity.ok(response);
-			}else {
-				
-				List<Document> studentList = studentsSectionalMarksDAO.fetchHighestMarksOfStudents(studentAnswersRequest.getExamId(), studentAnswersRequest.getSectionalId(),
-						studentAnswersRequest.getSubSectionId(), true);
+			int rank = studentList.indexOf(new Document(obj))+1;
 
-				Map<String, Object> obj = new HashMap<String, Object>();
+			StudentSectionalAnswerResponse finalResponse = new StudentSectionalAnswerResponse();
 
-				double marks = studentsSectionalMarks.getTotalMarks();
-				String marksInString = String.valueOf(marks);
+			finalResponse.setStudentsSectionalMarks(sectionalMarks);
+			finalResponse.setRanking(rank);
+			finalResponse.setTotalStudents(studentList.size());
+			finalResponse.setTopStudents(this.findHighestMarksOfStudents(studentAnswersRequest.getExamId(), studentAnswersRequest.getSectionalId(),
+					studentAnswersRequest.getSubSectionId(), studentAnswersRequest.getUserId()).getData());
 
-				if (marksInString.contains(".0"))
-					obj.put("totalMarks", (int)marks);
-				else
-					obj.put("totalMarks", marks);
-
-				obj.put("_id", studentsSectionalMarks.getUserId());
-				obj.put("userName", studentsSectionalMarks.getUserName());
-				obj.put("section", studentsSectionalMarks.getSectionalName());
-				obj.put("subSection", studentsSectionalMarks.getSubSectionName());
-				
-				int rank = studentList.indexOf(new Document(obj))+1;
-				
-				StudentSectionalAnswerResponse finalResponse = new StudentSectionalAnswerResponse();
-				
-				finalResponse.setStudentsSectionalMarks(studentsSectionalMarks);
-				finalResponse.setRanking(rank);
-				finalResponse.setTotalStudents(studentList.size());
-				finalResponse.setTopStudents(this.findHighestMarksOfStudents(studentAnswersRequest.getExamId(), studentAnswersRequest.getSectionalId(),
-						studentAnswersRequest.getSubSectionId(), studentAnswersRequest.getUserId()).getData());
-				
-				RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
-				return ResponseEntity.status(200).body(response);
-			}
+			RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
+			return ResponseEntity.ok(response);
 		}else {
 			RestResponse response = new RestResponse("FAILURE", "Sectional Mock not exists", 404);
 			return ResponseEntity.status(404).body(response);

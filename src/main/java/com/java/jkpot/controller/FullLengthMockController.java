@@ -26,11 +26,11 @@ public class FullLengthMockController {
 		return fullLengthMockService.fetchSectionInfoByExamId(examId);
 	}
 	
-	@GetMapping(path = "/find/{examId}/{mockId}")
+	@GetMapping(path = "/find/{examId}/{mockId}/{userId}")
 	public ResponseEntity<RestResponse> findSectionalMockByExamIdAndMockId(@PathVariable(value = "examId") int examId,
-			@PathVariable(value = "mockId") int mockId) {
+			@PathVariable(value = "mockId") int mockId, @PathVariable(value = "userId") String userId) {
 		
-		return fullLengthMockService.findSectionalMockByExamIdAndMockId(examId, mockId);
+		return fullLengthMockService.findFullLengthMockByExamIdAndMockId(examId, mockId, userId);
 	}
 	
 	@PostMapping(path = "/upload/student/answers")
