@@ -66,49 +66,48 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 				return ResponseEntity.status(404).body(response);
 			}
 		}else {
+
+			List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
+
+			RestResponse response = new RestResponse("TAKEN", sectionalMocks, 100);
 			
-			List<SectionalMocks> sectionalMocks = sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
-
-			List<Document> studentList = studentsSectionalMarksDAO.fetchHighestMarksOfStudents(examId, sectionalId, subSectionalId, true);
-
-			Map<String, Object> obj = new HashMap<String, Object>();
-
-			double marks = sectionalMarks.getTotalMarks();
-			String marksInString = String.valueOf(marks);
-
-			if (marksInString.contains(".0"))
-				obj.put("totalMarks", (int)marks);
-			else
-				obj.put("totalMarks", marks);
-
-			obj.put("_id", sectionalMarks.getUserId());
-			obj.put("userName", sectionalMarks.getUserName());
-			obj.put("section", sectionalMarks.getSectionalName());
-			obj.put("subSection", sectionalMarks.getSubSectionName());
-
-			int rank = studentList.indexOf(new Document(obj))+1;
-
-			List<String> studentAnswers = sectionalMarks.getStudentsAnswer();
-			for (int i = 0; i <sectionalMocks.size(); i++) {
-
-				sectionalMocks.get(i).setStudentAnswer(studentAnswers.get(i));
-				if (i == 0) {
-
-					sectionalMocks.get(i).setRanking(rank);
-					sectionalMocks.get(i).setTotalStudents(studentList.size());
-					sectionalMocks.get(i).setTopStudents(this.findHighestMarksOfStudents(examId, sectionalId, subSectionalId, userId).getData());
-					sectionalMocks.get(i).setCorrectQuestions(sectionalMarks.getCorrectQuestions());
-					sectionalMocks.get(i).setIncorrectQuestions(sectionalMarks.getIncorrectQuestions());
-					sectionalMocks.get(i).setSkippedQuestions(sectionalMarks.getSkippedQuestions());
-				}else {
-					continue;
-				}
-			}
-
-			RestResponse response = new RestResponse("SUCCESS", sectionalMocks, 200);
 			return ResponseEntity.status(200).body(response);
 		}
-	}	
+	}
+
+	@Override
+	public ResponseEntity<RestResponse> fetchStudentsAnalysis(int examId, int sectionalId, int subSectionalId, String userId) {
+
+		StudentsSectionalMarks sectionalMarks = studentsSectionalMarksDAO.checkIfStudentHasAlreadyGivenTheMock(examId, sectionalId, subSectionalId, userId);
+		List<Document> studentList = studentsSectionalMarksDAO.fetchHighestMarksOfStudents(examId, sectionalId, subSectionalId, true);
+
+		Map<String, Object> obj = new HashMap<String, Object>();
+
+		double marks = sectionalMarks.getTotalMarks();
+		String marksInString = String.valueOf(marks);
+
+		if (marksInString.contains(".0"))
+			obj.put("totalMarks", (int)marks);
+		else
+			obj.put("totalMarks", marks);
+
+		obj.put("_id", sectionalMarks.getUserId());
+		obj.put("userName", sectionalMarks.getUserName());
+		obj.put("section", sectionalMarks.getSectionalName());
+		obj.put("subSection", sectionalMarks.getSubSectionName());
+
+		int rank = studentList.indexOf(new Document(obj))+1;
+
+		StudentSectionalAnswerResponse finalResponse = new StudentSectionalAnswerResponse();
+		
+		finalResponse.setStudentsSectionalMarks(sectionalMarks);
+		finalResponse.setRanking(rank);
+		finalResponse.setTotalStudents(studentList.size());
+		finalResponse.setTopStudents(this.findHighestMarksOfStudents(examId, sectionalId, subSectionalId, userId).getData());
+
+		RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
+		return ResponseEntity.status(200).body(response);
+	}
 
 	@Override
 	public ResponseEntity<RestResponse> updateSectionalMockBySectionalIdAndSubSectionalId(UpdateSectionalMockRequest sectionalMockUpdateObj) {

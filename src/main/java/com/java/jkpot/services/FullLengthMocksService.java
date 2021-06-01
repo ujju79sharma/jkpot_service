@@ -11,6 +11,8 @@ public interface FullLengthMocksService {
 	
 	ResponseEntity<RestResponse> findFullLengthMockByExamIdAndMockId(int examId, int mockId, String userId);
 
+	ResponseEntity<RestResponse> showStudentsPerformance(int examId, int mockId, String userId);
+
 	ResponseEntity<RestResponse> uploadAndFindStudentMarks(StudentAnswersRequest studentAnswersRequest);
 
 	RestResponse fetchTopStudentsInAMock(int examId, int mockId, String userId);

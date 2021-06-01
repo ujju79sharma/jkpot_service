@@ -32,7 +32,14 @@ public class FullLengthMockController {
 		
 		return fullLengthMockService.findFullLengthMockByExamIdAndMockId(examId, mockId, userId);
 	}
-	
+
+	@GetMapping(path = "/students/analysis/{examId}/{mockId}/{userId}")
+	public ResponseEntity<RestResponse> showStudentsPerformanceByExamIdAndMockId(@PathVariable(value = "examId") int examId,
+			@PathVariable(value = "mockId") int mockId, @PathVariable(value = "userId") String userId) {
+
+		return fullLengthMockService.showStudentsPerformance(examId, mockId, userId);
+	}
+
 	@PostMapping(path = "/upload/student/answers")
 	public ResponseEntity<RestResponse> uploadAndFindStudentMarks(@RequestBody StudentAnswersRequest studentAnswersRequest) {
 

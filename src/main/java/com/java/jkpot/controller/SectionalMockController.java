@@ -32,6 +32,16 @@ public class SectionalMockController {
 		return sectionalMockService.findSectionalMockBySectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId, userId);
 	}
 
+	@GetMapping(value = "/students/analysis/{examId}/{sectionalId}/{subSectionalId}/{userId}")
+	public ResponseEntity<RestResponse> analyseStudentsSectionalMockByExamIdAndSectionalIdAndSubSectionalId(
+			@PathVariable(value = "examId") int examId,
+			@PathVariable(value = "sectionalId") int sectionalId, 
+			@PathVariable(value = "subSectionalId") int subSectionalId,
+			@PathVariable(value = "userId") String userId) {
+
+		return sectionalMockService.fetchStudentsAnalysis(examId, sectionalId, subSectionalId, userId);
+	}
+
 	@PutMapping(value = "/update/fields")
 	public ResponseEntity<RestResponse> updateSectionalMockQuestionBySectionalIdAndSubSectionalId(@RequestBody UpdateSectionalMockRequest sectionalMockUpdateObj) {
 

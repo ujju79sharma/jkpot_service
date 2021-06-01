@@ -45,20 +45,6 @@ public class FullLengthMocks {
 	private String answer;
 	@ExcelCellName("Image")
 	private String imageName;
-	@Transient
-	private String studentsAnswer;
-	@Transient
-	private int ranking;
-	@Transient
-	private int totalStudents;
-	@Transient
-	private Object topStudents;
-	@Transient
-	private Object correctQuestions;
-	@Transient
-	private Object incorrectQuestions;
-	@Transient
-	private Object skippedQuestions;
 
 	public int getFullLengthMockId() {
 		return fullLengthMockId;
@@ -194,62 +180,6 @@ public class FullLengthMocks {
 
 	public void setImageName(String imageName) {
 		this.imageName = imageName;
-	}
-
-	public String getStudentsAnswer() {
-		return studentsAnswer;
-	}
-
-	public void setStudentsAnswer(String studentsAnswer) {
-		this.studentsAnswer = studentsAnswer;
-	}
-
-	public int getRanking() {
-		return ranking;
-	}
-
-	public void setRanking(int ranking) {
-		this.ranking = ranking;
-	}
-
-	public int getTotalStudents() {
-		return totalStudents;
-	}
-
-	public void setTotalStudents(int totalStudents) {
-		this.totalStudents = totalStudents;
-	}
-
-	public Object getTopStudents() {
-		return topStudents;
-	}
-
-	public void setTopStudents(Object topStudents) {
-		this.topStudents = topStudents;
-	}
-
-	public Object getCorrectQuestions() {
-		return correctQuestions;
-	}
-
-	public void setCorrectQuestions(Object correctQuestions) {
-		this.correctQuestions = correctQuestions;
-	}
-
-	public Object getIncorrectQuestions() {
-		return incorrectQuestions;
-	}
-
-	public void setIncorrectQuestions(Object incorrectQuestions) {
-		this.incorrectQuestions = incorrectQuestions;
-	}
-
-	public Object getSkippedQuestions() {
-		return skippedQuestions;
-	}
-
-	public void setSkippedQuestions(Object skippedQuestions) {
-		this.skippedQuestions = skippedQuestions;
 	}
 
 	@Override

@@ -8,7 +8,6 @@ public class StudentFullMockAnswerResponse {
 	private int totalStudents;
 	private StudentsFullLengthMockMarks studentsFullLengthMockMarks;
 	private Object topStudents;
-	private Object studentsMockAnalysis;
 
 	public int getRanking() {
 		return ranking;
@@ -40,13 +39,5 @@ public class StudentFullMockAnswerResponse {
 
 	public void setTopStudents(Object topStudents) {
 		this.topStudents = topStudents;
-	}
-
-	public Object getStudentsMockAnalysis() {
-		return studentsMockAnalysis;
-	}
-
-	public void setStudentsMockAnalysis(Object studentsMockAnalysis) {
-		this.studentsMockAnalysis = studentsMockAnalysis;
 	}
 }

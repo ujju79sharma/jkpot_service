@@ -18,4 +18,6 @@ public interface SectionalMockService {
 
 	ResponseEntity<RestResponse> fetchAttemptedMocksOfUser(String userId);
 
+	ResponseEntity<RestResponse> fetchStudentsAnalysis(int examId, int sectionalId, int subSectionalId, String userId);
+
 }
