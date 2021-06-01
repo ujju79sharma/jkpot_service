@@ -94,30 +94,38 @@ public class FullLengthMocksServiceImpl implements FullLengthMocksService{
 	public ResponseEntity<RestResponse> showStudentsPerformance(int examId, int mockId, String userId) {
 
 		StudentsFullLengthMockMarks checkIfStudentHasGivenTheMock = studentsFullLengthMarksDAO.checkIfUserHasGivenTheMock(examId, mockId, userId);
-		List<Document> studentList = studentsFullLengthMarksDAO.fetchHighestMarksOfStudents(examId, mockId);
+		
+		if (checkIfStudentHasGivenTheMock != null) {
 
-		Map<String, Object> obj = new HashMap<String, Object>();
+			List<Document> studentList = studentsFullLengthMarksDAO.fetchHighestMarksOfStudents(examId, mockId);
+	
+			Map<String, Object> obj = new HashMap<String, Object>();
+	
+			double marks = checkIfStudentHasGivenTheMock.getTotalMarks();
+	//		String marksInString = String.valueOf(marks);
+	
+			obj.put("totalMarks", marks);
+			obj.put("_id", checkIfStudentHasGivenTheMock.getUserId());
+			obj.put("userName", checkIfStudentHasGivenTheMock.getUserName());
+			obj.put("mock", checkIfStudentHasGivenTheMock.getMockName());
+			obj.put("exam", checkIfStudentHasGivenTheMock.getExamName());
+	
+			int rank = studentList.indexOf(new Document(obj))+1;
+	
+			StudentFullMockAnswerResponse finalResponse = new StudentFullMockAnswerResponse();
+	
+			finalResponse.setStudentsFullLengthMockMarks(checkIfStudentHasGivenTheMock);
+			finalResponse.setRanking(rank);
+			finalResponse.setTotalStudents(studentList.size());
+			finalResponse.setTopStudents(this.fetchTopStudentsInAMock(examId, mockId, userId).getData());
+	
+			RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
+			return ResponseEntity.status(200).body(response);
+		}else {
 
-		double marks = checkIfStudentHasGivenTheMock.getTotalMarks();
-//		String marksInString = String.valueOf(marks);
-
-		obj.put("totalMarks", marks);
-		obj.put("_id", checkIfStudentHasGivenTheMock.getUserId());
-		obj.put("userName", checkIfStudentHasGivenTheMock.getUserName());
-		obj.put("mock", checkIfStudentHasGivenTheMock.getMockName());
-		obj.put("exam", checkIfStudentHasGivenTheMock.getExamName());
-
-		int rank = studentList.indexOf(new Document(obj))+1;
-
-		StudentFullMockAnswerResponse finalResponse = new StudentFullMockAnswerResponse();
-
-		finalResponse.setStudentsFullLengthMockMarks(checkIfStudentHasGivenTheMock);
-		finalResponse.setRanking(rank);
-		finalResponse.setTotalStudents(studentList.size());
-		finalResponse.setTopStudents(this.fetchTopStudentsInAMock(examId, mockId, userId).getData());
-
-		RestResponse response = new RestResponse("SUCCESS", finalResponse, 200);
-		return ResponseEntity.status(200).body(response);
+			RestResponse response = new RestResponse("NOT TAKEN", null, 200);
+			return ResponseEntity.status(200).body(response);
+		}
 	}
 
 	@Override

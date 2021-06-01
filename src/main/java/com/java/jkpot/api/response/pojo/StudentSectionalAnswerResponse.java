@@ -8,7 +8,6 @@ public class StudentSectionalAnswerResponse {
 	private int totalStudents;
 	private StudentsSectionalMarks studentsSectionalMarks;
 	private Object topStudents;
-	private Object studentMockAnalysis;
 
 	public int getRanking() {
 		return ranking;
@@ -40,13 +39,5 @@ public class StudentSectionalAnswerResponse {
 
 	public void setTotalStudents(int totalStudents) {
 		this.totalStudents = totalStudents;
-	}
-
-	public Object getStudentMockAnalysis() {
-		return studentMockAnalysis;
-	}
-
-	public void setStudentMockAnalysis(Object studentMockAnalysis) {
-		this.studentMockAnalysis = studentMockAnalysis;
 	}
 }
