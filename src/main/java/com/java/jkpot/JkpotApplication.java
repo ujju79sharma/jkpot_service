@@ -13,14 +13,14 @@ public class JkpotApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(JkpotApplication.class, args);
 	}
-
-	@Bean
-	public MongoClient getMongoConnectivity() {
-
-		String url1 = "mongodb+srv://jkpot:jkpot@cluster0.vkskw.mongodb.net/jkpot?retryWrites=true&w=majority";
-
-		MongoClient mongoClient = MongoClients.create(url1);
-
-		return mongoClient;
-	}
+//
+//	@Bean
+//	public MongoClient getMongoConnectivity() {
+//
+//		String url1 = "mongodb+srv://jkpot:jkpot@cluster0.vkskw.mongodb.net/jkpot?retryWrites=true&w=majority";
+//
+//		MongoClient mongoClient = MongoClients.create(url1);
+//
+//		return mongoClient;
+//	}
 }
