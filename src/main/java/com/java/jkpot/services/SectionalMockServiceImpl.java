@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import org.bson.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -52,7 +54,8 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 
 		if (sectionalMarks == null) {
 
-			List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findSectionalMockByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
+			List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findSectionalMockByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId, 
+					Sort.by(Sort.Direction.ASC,"sectionQuestionNo"));
 
 			if (sectionalMocks.size() > 0) {
 	
@@ -67,7 +70,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 			}
 		}else {
 
-			List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId);
+			List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalId(examId, sectionalId, subSectionalId, Sort.by(Direction.ASC,"sectionQuestionNo"));
 
 			RestResponse response = new RestResponse("TAKEN", sectionalMocks, 100);
 			
@@ -158,7 +161,7 @@ public class SectionalMockServiceImpl implements SectionalMockService {
 	public ResponseEntity<RestResponse> findStudentMarks(StudentAnswersRequest studentAnswersRequest) {
 
 		List<SectionalMocks> sectionalMocks =  sectionalMockRepository.findByExamIdAndSectionalIdAndSubSectionalId(studentAnswersRequest.getExamId(), 
-				studentAnswersRequest.getSectionalId(),studentAnswersRequest.getSubSectionId());
+				studentAnswersRequest.getSectionalId(),studentAnswersRequest.getSubSectionId(), Sort.by(Direction.ASC, "sectionQuestionNo"));
 
 		if (sectionalMocks.size() > 0 && studentAnswersRequest.getUserId() != null && sectionalMocks.size() == studentAnswersRequest.getAnswers().size()) {
 
